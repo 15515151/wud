@@ -100,7 +100,8 @@ test.describe('Language switching', () => {
     // Do not leak the language preference into the other suites: it is both
     // stored locally and persisted on the user profile.
     await page.evaluate(() => localStorage.removeItem('wudLocale'));
-    await request.put('http://127.0.0.1:3900/api/profile/preferences', {
+    const baseURL = process.env.BASE_URL || 'http://127.0.0.1:3000';
+    await request.put(`${baseURL}/api/profile/preferences`, {
       headers: {
         Authorization: 'Basic ' + Buffer.from('john:doe').toString('base64'),
         'Content-Type': 'application/json',
