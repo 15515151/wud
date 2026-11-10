@@ -259,7 +259,11 @@ jobs:
 
   publish:
     name: Publish Docker Image
-    needs: [lint, unit-test, e2e-test, e2e-kubernetes, e2e-nomad, e2e-swarm, ui-e2e-test]
+    # `e2e-test` is deliberately not a dependency: it exercises private
+    # registries (ECR, TrueForge, GitLab) that require upstream-owned
+    # credentials, so it can never pass on a fork. It still runs and reports
+    # independently; publishing is gated on the suites that need no secrets.
+    needs: [lint, unit-test, e2e-kubernetes, e2e-nomad, e2e-swarm, ui-e2e-test]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -327,7 +331,9 @@ jobs:
   deploy-docs:
     name: Deploy Docs
     needs: [build-docs, publish]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # The site is published to the official getwud.app domain (see `cname`),
+    # so this must only run on the upstream repository, never on a fork.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'getwud/wud'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
