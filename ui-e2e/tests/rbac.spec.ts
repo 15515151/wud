@@ -13,7 +13,7 @@ test.describe('Role-Based Access Control (RBAC)', () => {
   test.beforeAll(async ({ playwright }) => {
     // Admin API context to provision test users
     const apiContext = await playwright.request.newContext({
-      baseURL: 'http://127.0.0.1:3000',
+      baseURL: process.env.BASE_URL || 'http://127.0.0.1:3000',
       extraHTTPHeaders: {
         Authorization: 'Basic ' + Buffer.from('john:doe').toString('base64'),
       },
@@ -52,7 +52,7 @@ test.describe('Role-Based Access Control (RBAC)', () => {
 
   test.afterAll(async ({ playwright }) => {
     const apiContext = await playwright.request.newContext({
-      baseURL: 'http://127.0.0.1:3000',
+      baseURL: process.env.BASE_URL || 'http://127.0.0.1:3000',
       extraHTTPHeaders: {
         Authorization: 'Basic ' + Buffer.from('john:doe').toString('base64'),
       },
@@ -71,9 +71,9 @@ test.describe('Role-Based Access Control (RBAC)', () => {
   test('ReadOnly (ro) role should have mutating UI controls hidden and backend mutations forbidden', async ({ page }) => {
     // 1. Log in as RO user
     await page.goto('/login');
-    await page.getByLabel('Username').fill(roUsername);
-    await page.getByLabel('Password', { exact: true }).fill(testPassword);
-    await page.getByRole('button', { name: 'Login' }).click();
+    await page.getByLabel('用户名').fill(roUsername);
+    await page.getByLabel('密码', { exact: true }).fill(testPassword);
+    await page.getByRole('button', { name: '登录' }).click();
     await expect(page).toHaveURL('/');
 
     // 2. Navigation: Users menu link is NOT visible
@@ -81,19 +81,19 @@ test.describe('Role-Based Access Control (RBAC)', () => {
 
     // 3. Route Guard: Accessing /configuration/users redirects to /
     await page.goto('/configuration/users');
-    await expect(page).toHaveURL('http://127.0.0.1:3000/');
+    await expect(page).toHaveURL('/');
 
     // 4. Containers view: "Watch now" button is hidden
     await page.goto('/containers');
-    await expect(page.getByRole('button', { name: 'Watch now' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '立即检测' })).toHaveCount(0);
 
     // Open first container details if present and verify delete button is hidden
     const containerCards = page.locator('.container-item-wrapper, .v-card.cursor-pointer');
     if (await containerCards.count() > 0) {
       await containerCards.first().click();
-      await expect(page.locator('button[title="Delete container"]')).toHaveCount(0);
+      await expect(page.locator('button[title="删除容器"]')).toHaveCount(0);
       // Close drawer if open
-      const closeBtn = page.locator('button[title="Close details"]');
+      const closeBtn = page.locator('button[title="关闭详情"]');
       if (await closeBtn.isVisible()) {
         await closeBtn.click();
       }
@@ -104,8 +104,8 @@ test.describe('Role-Based Access Control (RBAC)', () => {
     const triggerRow = page.locator('table tbody tr').first();
     if (await triggerRow.isVisible()) {
       await triggerRow.click();
-      await expect(page.getByRole('button', { name: 'Test', exact: true })).toHaveCount(0);
-      await expect(page.getByRole('button', { name: 'Test this trigger' })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: '测试', exact: true })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: '测试该触发器' })).toHaveCount(0);
     }
 
     // 6. Backend API enforcement: Direct mutation requests return 403 Forbidden
@@ -126,9 +126,9 @@ test.describe('Role-Based Access Control (RBAC)', () => {
   test('ReadWrite (rw) role should have mutation UI controls enabled but admin management blocked', async ({ page }) => {
     // 1. Log in as RW user
     await page.goto('/login');
-    await page.getByLabel('Username').fill(rwUsername);
-    await page.getByLabel('Password', { exact: true }).fill(testPassword);
-    await page.getByRole('button', { name: 'Login' }).click();
+    await page.getByLabel('用户名').fill(rwUsername);
+    await page.getByLabel('密码', { exact: true }).fill(testPassword);
+    await page.getByRole('button', { name: '登录' }).click();
     await expect(page).toHaveURL('/');
 
     // 2. Navigation: Users menu link is NOT visible for rw
@@ -136,19 +136,19 @@ test.describe('Role-Based Access Control (RBAC)', () => {
 
     // 3. Route Guard: Accessing /configuration/users redirects to /
     await page.goto('/configuration/users');
-    await expect(page).toHaveURL('http://127.0.0.1:3000/');
+    await expect(page).toHaveURL('/');
 
     // 4. Containers view: "Watch now" button IS visible
     await page.goto('/containers');
-    await expect(page.getByRole('button', { name: 'Watch now' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '立即检测' })).toBeVisible();
 
     // 5. Triggers view: Test trigger buttons ARE visible
     await page.goto('/configuration/triggers');
     const triggerRow = page.locator('table tbody tr').first();
     if (await triggerRow.isVisible()) {
       await triggerRow.click();
-      await expect(page.getByRole('button', { name: 'Test', exact: true })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Test this trigger' })).toBeVisible();
+      await expect(page.getByRole('button', { name: '测试', exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: '测试该触发器' })).toBeVisible();
     }
 
     // 6. Backend API enforcement: RW cannot manage users (403), but CAN watch containers (not 403)
@@ -169,26 +169,26 @@ test.describe('Role-Based Access Control (RBAC)', () => {
   test('Admin role should have full access to user management, container mutations, and trigger tests', async ({ page }) => {
     // 1. Log in as Admin
     await page.goto('/login');
-    await page.getByLabel('Username').fill('john');
-    await page.getByLabel('Password', { exact: true }).fill('doe');
-    await page.getByRole('button', { name: 'Login' }).click();
+    await page.getByLabel('用户名').fill('john');
+    await page.getByLabel('密码', { exact: true }).fill('doe');
+    await page.getByRole('button', { name: '登录' }).click();
     await expect(page).toHaveURL('/');
 
     // 2. Users link is visible and accessible
     await page.goto('/configuration/users');
     await expect(page).toHaveURL(/.*configuration\/users/);
-    await expect(page.getByText('User Management')).toBeVisible();
+    await expect(page.getByText('用户管理')).toBeVisible();
 
     // 3. Containers view: "Watch now" button IS visible
     await page.goto('/containers');
-    await expect(page.getByRole('button', { name: 'Watch now' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '立即检测' })).toBeVisible();
 
     // 4. Triggers view: Test trigger buttons ARE visible
     await page.goto('/configuration/triggers');
     const triggerRow = page.locator('table tbody tr').first();
     if (await triggerRow.isVisible()) {
       await triggerRow.click();
-      await expect(page.getByRole('button', { name: 'Test', exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: '测试', exact: true })).toBeVisible();
     }
   });
 });

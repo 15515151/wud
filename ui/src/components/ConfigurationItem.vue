@@ -29,7 +29,7 @@
             </v-list-item-subtitle>
           </v-list-item>
         </v-list>
-        <span v-else>Default configuration</span>
+        <span v-else>{{ t('configuration.defaultConfiguration') }}</span>
       </v-card-text>
     </transition>
   </v-card>
@@ -38,8 +38,13 @@
 <script lang="ts">
 import IconRenderer from "@/components/IconRenderer.vue";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   components: {
     IconRenderer,
   },

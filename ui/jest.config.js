@@ -2,11 +2,11 @@ module.exports = {
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.vue$': '@vue/vue3-jest',
-    '^.+\\.js$': 'babel-jest',
+    '^.+\\.m?js$': 'babel-jest',
     '^.+\\.ts$': 'ts-jest'
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(vuetify|@vue/test-utils|vue3-simple-icons|@iconify)/)',
+    'node_modules/(?!(vuetify|@vue/test-utils|vue3-simple-icons|@iconify|vue-i18n|@intlify)/)',
   ],
   moduleFileExtensions: ['js', 'json', 'vue', 'ts'],
   extensionsToTreatAsEsm: ['.vue'],

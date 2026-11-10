@@ -44,8 +44,8 @@ describe('ContainerDetail', () => {
       },
     });
 
-    expect(wrapper.text()).toContain('Official');
-    expect(wrapper.text()).toContain('Official Docker Image');
+    expect(wrapper.text()).toContain('官方');
+    expect(wrapper.text()).toContain('Docker 官方镜像');
   });
 
   it('does not render official badge when container.isOfficial is false or omitted', () => {
@@ -58,7 +58,7 @@ describe('ContainerDetail', () => {
       },
     });
 
-    expect(wrapper.text()).not.toContain('Official Docker Image');
+    expect(wrapper.text()).not.toContain('Docker 官方镜像');
   });
 
   it('renders documentationUrl, changelogUrl, and upstreamUrl links', () => {
@@ -73,11 +73,11 @@ describe('ContainerDetail', () => {
       },
     });
 
-    expect(wrapper.text()).toContain('Documentation');
+    expect(wrapper.text()).toContain('文档');
     expect(wrapper.text()).toContain('https://docs.example.com');
-    expect(wrapper.text()).toContain('Changelog');
+    expect(wrapper.text()).toContain('更新日志');
     expect(wrapper.text()).toContain('https://github.com/example/app/releases');
-    expect(wrapper.text()).toContain('Source Code');
+    expect(wrapper.text()).toContain('源代码');
     expect(wrapper.text()).toContain('https://github.com/example/app');
   });
 
@@ -96,7 +96,7 @@ describe('ContainerDetail', () => {
       },
     });
 
-    expect(wrapper.text()).toContain('Release notes');
+    expect(wrapper.text()).toContain('发布说明');
     expect(wrapper.text()).toContain('https://github.com/example/app/releases/tag/v2.0.0');
   });
 
@@ -114,9 +114,9 @@ describe('ContainerDetail', () => {
     });
 
     const listTitles = wrapper.findAll('.v-list-item-title').map((el: any) => el.text());
-    expect(listTitles).toContain('Documentation');
-    expect(listTitles).toContain('Source Code');
-    expect(listTitles).not.toContain('Link');
+    expect(listTitles).toContain('文档');
+    expect(listTitles).toContain('源代码');
+    expect(listTitles).not.toContain('链接');
     expect(listTitles).not.toContain('Link template');
   });
 

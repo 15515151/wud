@@ -80,7 +80,7 @@ describe('ContainerUpdateDialog.vue', () => {
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.text()).toContain('Update container');
+    expect(wrapper.text()).toContain('更新容器');
     expect(wrapper.text()).toContain('Nginx Service');
     expect(wrapper.text()).toContain('nginx:1.24.0');
     expect(wrapper.text()).toContain('1.24.0');
@@ -126,7 +126,7 @@ describe('ContainerUpdateDialog.vue', () => {
     expect((wrapper.vm as any).selectedTriggerKey).toBe('docker.local');
     expect((wrapper.vm as any).singleTriggerLabel).toBe('docker (local)');
     expect(wrapper.find('.v-select').exists()).toBe(false);
-    expect(wrapper.text()).toContain('Target trigger');
+    expect(wrapper.text()).toContain('目标触发器');
     expect(wrapper.text()).toContain('docker (local)');
   });
 
@@ -195,10 +195,10 @@ describe('ContainerUpdateDialog.vue', () => {
     expect((wrapper.vm as any).selectedTriggerKey).toBeNull();
     expect((wrapper.vm as any).selectedTrigger).toBeUndefined();
     expect(wrapper.text()).toContain(
-      'No update trigger (docker, dockercompose, command, nomad) is configured for this container.',
+      '该容器未配置更新触发器（docker、dockercompose、command、nomad）。',
     );
 
-    const updateBtn = wrapper.findAll('.v-btn').find((btn) => btn.text().includes('Update'));
+    const updateBtn = wrapper.findAll('.v-btn').find((btn) => btn.text().includes('更新'));
     expect(updateBtn?.attributes('disabled')).toBeDefined();
   });
 
@@ -249,7 +249,7 @@ describe('ContainerUpdateDialog.vue', () => {
     });
     expect(mockEventBus.emit).toHaveBeenCalledWith(
       'notify',
-      'Update triggered successfully for Nginx Service',
+      '已成功为 Nginx Service 触发更新',
     );
     expect(wrapper.emitted('updated')).toBeTruthy();
     expect(wrapper.emitted('updated')![0]).toEqual([singleUpdater[0]]);
@@ -278,7 +278,7 @@ describe('ContainerUpdateDialog.vue', () => {
     await wrapper.vm.$nextTick();
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.text()).toContain('Updating now will override the cooldown period');
+    expect(wrapper.text()).toContain('立即更新将忽略冷却期');
     await (wrapper.vm as any).confirmUpdate();
 
     expect(containerService.runTrigger).toHaveBeenCalledWith({
@@ -311,7 +311,7 @@ describe('ContainerUpdateDialog.vue', () => {
 
     expect(mockEventBus.emit).toHaveBeenCalledWith(
       'notify',
-      'Update triggered with error (Docker daemon error)',
+      '触发更新失败（Docker daemon error）',
       'error',
     );
     expect((wrapper.vm as any).isUpdating).toBe(false);

@@ -5,7 +5,7 @@
       <v-toolbar color="surface" density="compact" class="px-3 py-1">
         <v-icon :icon="registryIcon" class="mr-2 text-primary" size="24"></v-icon>
         <div class="d-flex align-center">
-          <span class="text-subtitle-1 font-weight-bold mr-2">Registries</span>
+          <span class="text-subtitle-1 font-weight-bold mr-2">{{ t('nav.registries') }}</span>
           <v-chip size="x-small" color="primary" variant="tonal" class="font-weight-medium">
             {{ registriesFiltered.length }}
           </v-chip>
@@ -17,7 +17,7 @@
         <v-text-field
           v-model="search"
           prepend-inner-icon="mdi-magnify"
-          placeholder="Search registries..."
+          :placeholder="t('configuration.searchPlaceholder', { section: t('nav.registries') })"
           density="compact"
           variant="outlined"
           hide-details
@@ -33,7 +33,7 @@
           size="small"
           @click="refreshRegistries"
           :loading="isLoading"
-          title="Refresh"
+          :title="t('common.refresh')"
         ></v-btn>
       </v-toolbar>
 
@@ -81,9 +81,9 @@
         <template v-slot:no-data>
           <div class="pa-8 text-center text-grey">
             <v-icon size="64" class="mb-4 opacity-50">{{ registryIcon }}</v-icon>
-            <div class="text-h6">No registries found</div>
-            <div class="text-body-2" v-if="search">Try clearing your search</div>
-            <div class="text-body-2" v-else>No registries configured</div>
+            <div class="text-h6">{{ t('configuration.noResults', { section: t('nav.registries') }) }}</div>
+            <div class="text-body-2" v-if="search">{{ t('configuration.tryClearing') }}</div>
+            <div class="text-body-2" v-else>{{ t('configuration.notConfigured', { section: t('nav.registries') }) }}</div>
           </div>
         </template>
       </v-data-table>
@@ -113,11 +113,11 @@
                 {{ selectedRegistry.name }}
               </div>
               <div class="text-caption text-grey text-truncate">
-                {{ selectedRegistry.type }} registry details
+                {{ selectedRegistry.type }} · {{ t('configuration.details') }}
               </div>
             </div>
           </div>
-          <v-btn icon="mdi-close" variant="text" size="small" @click="drawerOpen = false" title="Close details"></v-btn>
+          <v-btn icon="mdi-close" variant="text" size="small" @click="drawerOpen = false" :title="t('containers.actions.closeDetails')"></v-btn>
         </v-toolbar>
 
         <!-- Drawer Body -->
@@ -137,8 +137,13 @@ import ConfigurationDrawerContent from "@/components/ConfigurationDrawerContent.
 import IconRenderer from "@/components/IconRenderer.vue";
 import { getAllRegistries, getRegistryIcon, getRegistryProviderIcon } from "@/services/registry";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   name: "ConfigurationRegistriesView",
   components: {
     ConfigurationDrawerContent,
@@ -186,19 +191,19 @@ export default defineComponent({
     headers() {
       return [
         {
-          title: "Provider",
+          title: this.t("configuration.tabs.provider"),
           key: "type",
           value: (item: any) => item.type || "",
           sortable: true,
         },
         {
-          title: "Name",
+          title: this.t("configuration.tabs.name"),
           key: "name",
           value: (item: any) => item.name || "",
           sortable: true,
         },
         {
-          title: "Configuration",
+          title: this.t("configuration.tabs.configuration"),
           key: "configuration",
           value: (item: any) => Object.keys(item.configuration || {}).length,
           sortable: true,
@@ -222,7 +227,7 @@ export default defineComponent({
   methods: {
     getConfigurationCount(item: any): string {
       const count = Object.keys(item.configuration || {}).length;
-      return `${count} ${count === 1 ? "param" : "params"}`;
+      return this.t(count === 1 ? "configuration.entry" : "configuration.entries", { count });
     },
     onRowClick(event: any, row: any) {
       const item = row?.item?.raw || row?.item || row;
@@ -250,7 +255,7 @@ export default defineComponent({
       } catch (e: any) {
         (this as any).$eventBus?.emit(
           "notify",
-          `Error when trying to load the registries (${e.message})`,
+          this.t("configuration.errors.registries", { message: e.message }),
           "error"
         );
       } finally {
@@ -273,7 +278,7 @@ export default defineComponent({
       next((vm: any) => {
         vm.$eventBus?.emit(
           "notify",
-          `Error when trying to load the registries (${e.message})`,
+          vm.t("configuration.errors.registries", { message: e.message }),
           "error"
         );
       });

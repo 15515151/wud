@@ -25,6 +25,7 @@ export async function getProfile(): Promise<UserItem> {
 
 export async function updatePreferences(preferences: {
   theme?: 'light' | 'dark';
+  locale?: 'en' | 'zh-CN';
   [key: string]: any;
 }): Promise<UserItem> {
   if (isDemoMode()) {

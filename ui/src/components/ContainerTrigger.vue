@@ -10,7 +10,7 @@
         </router-link>
       </v-list-item-title>
       <v-list-item-subtitle v-if="trigger?.configuration?.threshold">
-        (threshold {{ trigger.configuration.threshold }})
+        {{ t('triggers.threshold', { value: trigger.configuration.threshold }) }}
       </v-list-item-subtitle>
       <template v-slot:append>
         <v-tooltip v-if="isCoolingDown && !updateAvailable" location="bottom">
@@ -23,11 +23,11 @@
               :loading="isTriggering"
               v-bind="props"
             >
-              Run
+              {{ t('triggers.run') }}
               <v-icon end>mdi-lightning-bolt</v-icon>
             </v-btn>
           </template>
-          <span>Override cool-down and run trigger immediately</span>
+          <span>{{ t('triggers.overrideRun') }}</span>
         </v-tooltip>
         <v-btn
           v-else-if="canWrite"
@@ -37,7 +37,7 @@
           @click="runTrigger"
           :loading="isTriggering"
         >
-          Run
+          {{ t('triggers.run') }}
           <v-icon end>mdi-gesture-tap</v-icon>
         </v-btn>
       </template>
@@ -51,9 +51,14 @@ import { runTrigger } from "@/services/container";
 import { getTriggerProviderIcon } from "@/services/trigger";
 import { getUser } from "@/services/auth";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "ContainerTrigger",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   components: {
     IconRenderer,
   },
@@ -114,11 +119,11 @@ export default defineComponent({
             ? { overrideCooldown: true }
             : {}),
         });
-        (this as any).$eventBus?.emit("notify", "Trigger executed with success");
+        (this as any).$eventBus?.emit("notify", this.t("triggers.success"));
       } catch (err: any) {
         (this as any).$eventBus?.emit(
           "notify",
-          `Trigger executed with error (${err.message})`,
+          this.t("triggers.error", { message: err.message }),
           "error",
         );
       } finally {

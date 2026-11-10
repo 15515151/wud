@@ -48,7 +48,7 @@ describe('LiveWatchHud.vue', () => {
     });
     await wrapper.vm.$nextTick();
     expect(wrapper.text()).toContain('2 / 5');
-    expect(wrapper.text()).toContain('Inspecting: redis (docker.local)');
+    expect(wrapper.text()).toContain('正在检查： redis (docker.local)');
 
     // Emit stop
     emitEvent('wud:watch-stop', { watcher: 'docker.local', processed: 5, total: 5 });
@@ -84,7 +84,7 @@ describe('LiveWatchHud.vue', () => {
     });
     await wrapper.vm.$nextTick();
     expect(wrapper.text()).toContain('5 / 30');
-    expect(wrapper.text()).toContain('Inspecting: c1 (w1)');
+    expect(wrapper.text()).toContain('正在检查： c1 (w1)');
 
     // Progress w2
     emitEvent('wud:watch-progress', { 
@@ -92,7 +92,7 @@ describe('LiveWatchHud.vue', () => {
     });
     await wrapper.vm.$nextTick();
     expect(wrapper.text()).toContain('15 / 30'); // 5 from w1 + 10 from w2
-    expect(wrapper.text()).toContain('Inspecting: c2 (w2)');
+    expect(wrapper.text()).toContain('正在检查： c2 (w2)');
 
     // Stop w1
     emitEvent('wud:watch-stop', { watcher: 'w1', processed: 10, total: 10 });

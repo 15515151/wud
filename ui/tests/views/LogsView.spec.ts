@@ -53,7 +53,7 @@ describe('LogsView', () => {
   });
 
   it('renders correctly and connects to log stream', () => {
-    expect(wrapper.text()).toContain('Application Logs');
+    expect(wrapper.text()).toContain('应用日志');
     expect(logService.streamLogs).toHaveBeenCalled();
   });
 
@@ -114,7 +114,7 @@ describe('LogsView', () => {
 
     // Non-existent search
     await wrapper.setData({ search: 'nonexistent' });
-    expect(wrapper.text()).toContain('No logs match the filter');
+    expect(wrapper.text()).toContain('没有匹配筛选条件的日志');
   });
 
   it('clears logs when clearLogs is called', async () => {
@@ -122,7 +122,7 @@ describe('LogsView', () => {
     wrapper.vm.clearLogs();
     expect(wrapper.vm.logLines.length).toBe(0);
     await wrapper.vm.$nextTick();
-    expect(wrapper.text()).toContain('Waiting for incoming logs...');
+    expect(wrapper.text()).toContain('等待日志传入…');
   });
 
   it('handles formatDate edge cases', () => {

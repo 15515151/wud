@@ -80,7 +80,7 @@
                   class="ml-3 font-weight-medium"
                 >
                   <v-icon start size="x-small">mdi-docker</v-icon>
-                  {{ item.items.length }} {{ item.items.length > 1 ? 'containers' : 'container' }}
+                  {{ t('containers.groupCount', { count: item.items.length }) }}
                 </v-chip>
               </div>
             </td>
@@ -114,7 +114,7 @@
                 size="small"
                 class="font-weight-medium cursor-pointer"
                 @click.stop="onStackChipClick(item.raw ? item.raw.stack : item.stack)"
-                title="Filter by this stack"
+                :title="t('containers.filterByStack')"
               >
                 <v-icon start size="small">mdi-layers-outline</v-icon>
                 {{ item.raw ? item.raw.stack : item.stack }}
@@ -141,7 +141,7 @@
                       mdi-check-decagram
                     </v-icon>
                   </template>
-                  <span>Official Docker Image</span>
+                  <span>{{ t('containers.officialImage') }}</span>
                 </v-tooltip>
               </div>
             </template>
@@ -163,14 +163,14 @@
                         :color="getNewVersionClass(item.raw || item)"
                         size="small"
                         v-bind="props"
-                        @click.stop="copyToClipboard('container new version', getNewVersion(item.raw || item))"
+                        @click.stop="copyToClipboard(t('containers.copyNewVersion'), getNewVersion(item.raw || item))"
                         class="cursor-pointer font-weight-bold"
                       >
                         <v-icon start size="small">mdi-arrow-up-bold</v-icon>
                         {{ getNewVersion(item.raw || item) }}
                       </v-chip>
                     </template>
-                    <span class="text-caption">Copy to clipboard</span>
+                    <span class="text-caption">{{ t('common.copyToClipboard') }}</span>
                   </v-tooltip>
                   <v-tooltip bottom v-if="(item.raw ? item.raw.result?.changelogUrl : item.result?.changelogUrl) || (item.raw ? item.raw.changelogUrl : item.changelogUrl)">
                     <template v-slot:activator="{ props }">
@@ -184,10 +184,10 @@
                         target="_blank"
                         v-bind="props"
                         @click.stop
-                        :aria-label="`View release notes for ${getNewVersion(item.raw || item)}`"
+                        :aria-label="t('containers.viewReleaseNotes', { version: getNewVersion(item.raw || item) })"
                       />
                     </template>
-                    <span>View release notes for {{ getNewVersion(item.raw || item) }}</span>
+                    <span>{{ t('containers.viewReleaseNotes', { version: getNewVersion(item.raw || item) }) }}</span>
                   </v-tooltip>
                 </div>
               </template>
@@ -203,11 +203,13 @@
                       class="font-weight-medium"
                     >
                       <v-icon start size="small">mdi-bell-sleep</v-icon>
-                      Snoozed ({{ (item.raw ? item.raw.snoozedVersion : item.snoozedVersion) }})
+                      {{ t('containers.snoozedLabel', { version: (item.raw ? item.raw.snoozedVersion : item.snoozedVersion) }) }}
                     </v-chip>
                   </template>
                   <span>
-                    Update snoozed{{ (item.raw ? item.raw.snoozedUntil : item.snoozedUntil) ? ` until ${new Date(item.raw ? item.raw.snoozedUntil : item.snoozedUntil).toLocaleString()}` : ' indefinitely' }}
+                    {{ (item.raw ? item.raw.snoozedUntil : item.snoozedUntil)
+                      ? t('containers.snoozedUntil', { date: formatDateTime(item.raw ? item.raw.snoozedUntil : item.snoozedUntil) })
+                      : t('containers.snoozedIndefinitely') }}
                   </span>
                 </v-tooltip>
               </template>
@@ -223,15 +225,17 @@
                       class="font-weight-medium"
                     >
                       <v-icon start size="small">mdi-timer-sand</v-icon>
-                      Cooling down
+                      {{ t('containers.coolingDown') }}
                     </v-chip>
                   </template>
                   <span>
-                    Update available but cooling down{{ (item.raw ? item.raw.coolingDownUntil : item.coolingDownUntil) ? ` until ${new Date(item.raw ? item.raw.coolingDownUntil : item.coolingDownUntil).toLocaleString()}` : '' }}
+                    {{ (item.raw ? item.raw.coolingDownUntil : item.coolingDownUntil)
+                      ? t('containers.coolingDownUntil', { date: formatDateTime(item.raw ? item.raw.coolingDownUntil : item.coolingDownUntil) })
+                      : t('containers.coolingDownNoDate') }}
                   </span>
                 </v-tooltip>
               </template>
-              <span v-else class="text-grey text-caption">Up to date</span>
+              <span v-else class="text-grey text-caption">{{ t('containers.upToDate') }}</span>
             </template>
 
             <template #[`item.actions`]="{ item }">
@@ -243,33 +247,33 @@
                     size="small"
                     v-bind="props"
                     @click.stop
-                    aria-label="Actions"
+                    :aria-label="t('common.actions')"
                   />
                 </template>
                 <v-list density="compact">
                   <v-list-item
                     v-if="((item.raw ? item.raw.updateAvailable : item.updateAvailable) || (item.raw ? item.raw.isCoolingDown : item.isCoolingDown)) && canWrite"
                     prepend-icon="mdi-package-down"
-                    :title="(item.raw ? item.raw.isCoolingDown : item.isCoolingDown) ? 'Override cooldown & update' : 'Update container'"
+                    :title="(item.raw ? item.raw.isCoolingDown : item.isCoolingDown) ? t('containers.actions.overrideUpdate') : t('containers.actions.update')"
                     class="text-primary"
                     @click.stop="openUpdateDialog(item.raw || item)"
                   />
                   <v-list-item
                     v-if="(item.raw ? item.raw.updateAvailable : item.updateAvailable) && canWrite"
                     prepend-icon="mdi-bell-sleep"
-                    title="Snooze update"
+                    :title="t('containers.actions.snooze')"
                     @click.stop="openSnoozeDialog(item.raw || item)"
                   />
                   <v-list-item
                     v-if="((item.raw ? item.raw.isSnoozed : item.isSnoozed) || (item.raw ? item.raw.snoozedVersion : item.snoozedVersion)) && canWrite"
                     prepend-icon="mdi-bell-ring"
-                    title="Unsnooze update"
+                    :title="t('containers.actions.unsnooze')"
                     @click.stop="executeUnsnooze(item.raw || item)"
                   />
                   <v-list-item
                     v-if="(item.raw ? item.raw.documentationUrl : item.documentationUrl) || (item.raw ? item.raw.link : item.link)"
                     prepend-icon="mdi-book-open-page-variant"
-                    title="Documentation"
+                    :title="t('containers.actions.documentation')"
                     :href="(item.raw ? item.raw.documentationUrl : item.documentationUrl) || (item.raw ? item.raw.link : item.link)"
                     target="_blank"
                     @click.stop
@@ -277,7 +281,7 @@
                   <v-list-item
                     v-if="(item.raw ? item.raw.updateAvailable : item.updateAvailable) && ((item.raw ? item.raw.result?.changelogUrl : item.result?.changelogUrl) || (item.raw ? item.raw.changelogUrl : item.changelogUrl))"
                     prepend-icon="mdi-history"
-                    :title="'Release notes (' + getNewVersion(item.raw || item) + ')'"
+                    :title="t('containers.releaseNotesFor', { version: getNewVersion(item.raw || item) })"
                     :href="(item.raw ? item.raw.result?.changelogUrl : item.result?.changelogUrl) || (item.raw ? item.raw.changelogUrl : item.changelogUrl)"
                     target="_blank"
                     @click.stop
@@ -285,7 +289,7 @@
                   <v-list-item
                     v-else-if="item.raw ? item.raw.changelogUrl : item.changelogUrl"
                     prepend-icon="mdi-history"
-                    title="Changelog"
+                    :title="t('containers.actions.changelog')"
                     :href="item.raw ? item.raw.changelogUrl : item.changelogUrl"
                     target="_blank"
                     @click.stop
@@ -293,7 +297,7 @@
                   <v-list-item
                     v-if="item.raw ? item.raw.upstreamUrl : item.upstreamUrl"
                     prepend-icon="mdi-code-tags"
-                    title="Source code"
+                    :title="t('containers.actions.sourceCode')"
                     :href="item.raw ? item.raw.upstreamUrl : item.upstreamUrl"
                     target="_blank"
                     @click.stop
@@ -301,7 +305,7 @@
                   <v-list-item
                     v-if="deleteEnabled && canWrite"
                     prepend-icon="mdi-delete"
-                    title="Delete container"
+                    :title="t('containers.actions.delete')"
                     class="text-error"
                     @click.stop="confirmDelete(item.raw || item)"
                   />
@@ -312,8 +316,8 @@
             <template v-slot:no-data>
               <div class="pa-8 text-center text-grey">
                 <v-icon size="64" class="mb-4 opacity-50">mdi-docker</v-icon>
-                <div class="text-h6">No containers found</div>
-                <div class="text-body-2">Try adjusting your filters</div>
+                <div class="text-h6">{{ t('containers.noData.title') }}</div>
+                <div class="text-body-2">{{ t('containers.noData.subtitle') }}</div>
               </div>
             </template>
           </v-data-table>
@@ -357,7 +361,7 @@
             size="small"
             class="mr-1"
             @click="openUpdateDialog(selectedContainer)"
-            :title="selectedContainer.isCoolingDown ? 'Override cooldown and update' : 'Update container'"
+            :title="selectedContainer.isCoolingDown ? t('containers.actions.overrideUpdateDetail') : t('containers.actions.updateContainerDetail')"
           ></v-btn>
           <v-btn
             v-if="selectedContainer.updateAvailable && canWrite"
@@ -367,7 +371,7 @@
             size="small"
             class="mr-1"
             @click="openSnoozeDialog(selectedContainer)"
-            title="Snooze update"
+            :title="t('containers.actions.snooze')"
           ></v-btn>
           <v-btn
             v-if="(selectedContainer.isSnoozed || selectedContainer.snoozedVersion) && canWrite"
@@ -377,7 +381,7 @@
             size="small"
             class="mr-1"
             @click="executeUnsnooze(selectedContainer)"
-            title="Unsnooze update"
+            :title="t('containers.actions.unsnooze')"
           ></v-btn>
           <v-btn
             v-if="deleteEnabled && canWrite"
@@ -387,27 +391,27 @@
             size="small"
             class="mr-1"
             @click="confirmDelete(selectedContainer)"
-            title="Delete container"
+            :title="t('containers.actions.delete')"
           ></v-btn>
-          <v-btn icon="mdi-close" variant="text" size="small" @click="drawerOpen = false" title="Close details"></v-btn>
+          <v-btn icon="mdi-close" variant="text" size="small" @click="drawerOpen = false" :title="t('containers.actions.closeDetails')"></v-btn>
         </v-toolbar>
 
         <!-- Drawer Content Tabs -->
         <v-tabs v-model="drawerTab" color="primary" align-tabs="start" density="compact" class="border-b px-2 bg-surface">
           <v-tab value="update" v-if="selectedContainer.result">
-            <v-icon start size="small">mdi-package-down</v-icon> Update
+            <v-icon start size="small">mdi-package-down</v-icon> {{ t('containers.tabs.update') }}
           </v-tab>
           <v-tab value="triggers">
-            <v-icon start size="small">mdi-bell-ring</v-icon> Triggers
+            <v-icon start size="small">mdi-bell-ring</v-icon> {{ t('containers.tabs.triggers') }}
           </v-tab>
           <v-tab value="image">
-            <v-icon start size="small">mdi-package-variant-closed</v-icon> Image
+            <v-icon start size="small">mdi-package-variant-closed</v-icon> {{ t('containers.tabs.image') }}
           </v-tab>
           <v-tab value="container">
-            <IconRenderer :icon="selectedContainer.displayIcon || 'mdi:docker'" :size="16" :margin-right="4" /> Container
+            <IconRenderer :icon="selectedContainer.displayIcon || 'mdi:docker'" :size="16" :margin-right="4" /> {{ t('containers.tabs.container') }}
           </v-tab>
           <v-tab value="error" v-if="selectedContainer.error">
-            <v-icon start size="small" color="error">mdi-alert</v-icon> Error
+            <v-icon start size="small" color="error">mdi-alert</v-icon> {{ t('containers.tabs.error') }}
           </v-tab>
         </v-tabs>
 
@@ -453,15 +457,15 @@
     <v-dialog v-model="dialogDelete" width="500">
       <v-card class="text-center rounded-lg">
         <v-toolbar color="error" flat>
-          <v-toolbar-title class="text-white">Delete the container?</v-toolbar-title>
+          <v-toolbar-title class="text-white">{{ t('containers.delete.title') }}</v-toolbar-title>
         </v-toolbar>
         <v-card-text class="pt-6 pb-6 text-body-1">
-          Delete <span class="font-weight-bold text-error">{{ containerToDelete?.name }}</span> from the list?<br />
-          <span class="text-caption text-grey font-italic">(The real container won't be deleted)</span>
+          {{ t('containers.delete.question', { name: containerToDelete?.name }) }}<br />
+          <span class="text-caption text-grey font-italic">{{ t('containers.delete.hint') }}</span>
         </v-card-text>
         <v-card-actions class="justify-center pb-6">
-          <v-btn variant="outlined" @click="dialogDelete = false" class="px-6">Cancel</v-btn>
-          <v-btn color="error" variant="flat" @click="executeDelete" class="px-6">Delete</v-btn>
+          <v-btn variant="outlined" @click="dialogDelete = false" class="px-6">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="error" variant="flat" @click="executeDelete" class="px-6">{{ t('common.delete') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -472,24 +476,23 @@
         <v-toolbar color="primary" flat>
           <v-toolbar-title class="text-white">
             <v-icon start>mdi-bell-sleep</v-icon>
-            Snooze update
+            {{ t('containers.snooze.title') }}
           </v-toolbar-title>
         </v-toolbar>
         <v-card-text class="pt-4 pb-2 text-body-1">
           <div>
-            Snooze update for
-            <span class="font-weight-bold">{{ containerToSnooze?.displayName || containerToSnooze?.name }}</span>:
+            {{ t('containers.snooze.for', { name: containerToSnooze?.displayName || containerToSnooze?.name }) }}
           </div>
           <v-radio-group v-model="snoozeDuration" class="mt-3">
-            <v-radio label="Until next version" value="indefinitely" />
-            <v-radio label="For 1 day" value="1_day" />
-            <v-radio label="For 1 week" value="1_week" />
-            <v-radio label="For 1 month" value="1_month" />
+            <v-radio :label="t('containers.snooze.untilNextVersion')" value="indefinitely" />
+            <v-radio :label="t('containers.snooze.oneDay')" value="1_day" />
+            <v-radio :label="t('containers.snooze.oneWeek')" value="1_week" />
+            <v-radio :label="t('containers.snooze.oneMonth')" value="1_month" />
           </v-radio-group>
         </v-card-text>
         <v-card-actions class="justify-end px-4 pb-4">
-          <v-btn variant="outlined" @click="dialogSnooze = false">Cancel</v-btn>
-          <v-btn color="primary" variant="flat" :loading="snoozeLoading" @click="executeSnooze">Snooze</v-btn>
+          <v-btn variant="outlined" @click="dialogSnooze = false">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="primary" variant="flat" :loading="snoozeLoading" @click="executeSnooze">{{ t('containers.snooze.action') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -524,8 +527,14 @@ import { getUser } from "@/services/auth";
 import { eventService } from "@/services/event";
 import { copyToClipboard } from "@/services/clipboard";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
+import { currentLocale, intlLocale } from "@/i18n";
 
 export default defineComponent({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   components: {
     ContainerFilter,
     ContainerDetail,
@@ -630,31 +639,31 @@ export default defineComponent({
     headers() {
       return [
         {
-          title: "Watcher",
+          title: this.t("containers.headers.watcher"),
           key: "watcher",
           value: (item: any) => item.watcher || "",
           sortable: true,
         },
         {
-          title: "Registry",
+          title: this.t("containers.headers.registry"),
           key: "registry",
           value: (item: any) => item.image?.registry?.name || "",
           sortable: true,
         },
         {
-          title: "Stack",
+          title: this.t("containers.headers.stack"),
           key: "stack",
           value: (item: any) => item.stack || "",
           sortable: true,
         },
         {
-          title: "Container",
+          title: this.t("containers.headers.container"),
           key: "displayName",
           value: (item: any) => item.displayName || item.name || "",
           sortable: true,
         },
         {
-          title: "Version",
+          title: this.t("containers.headers.version"),
           key: "currentVersion",
           value: (item: any) => item.image?.tag?.value || "",
           sortRaw: (a: any, b: any) => {
@@ -665,7 +674,7 @@ export default defineComponent({
           sortable: true,
         },
         {
-          title: "Update",
+          title: this.t("containers.headers.update"),
           key: "update",
           value: (item: any) => (item.updateAvailable ? this.getNewVersion(item) : ""),
           sortRaw: (a: any, b: any) => {
@@ -679,7 +688,7 @@ export default defineComponent({
           sortable: true,
         },
         {
-          title: "Actions",
+          title: this.t("containers.headers.actions"),
           key: "actions",
           sortable: false,
           align: "end",
@@ -756,14 +765,15 @@ export default defineComponent({
           containerGroup: this.groupByLabel
             ? (c.labels && c.labels[this.groupByLabel] !== undefined && c.labels[this.groupByLabel] !== null && c.labels[this.groupByLabel] !== ""
                 ? String(c.labels[this.groupByLabel])
-                : "(empty)")
+                : this.t("common.empty"))
             : "",
         }))
         .sort((a, b) => {
           if (this.groupByLabel) {
             if (a.containerGroup !== b.containerGroup) {
-              if (a.containerGroup === "(empty)") return 1;
-              if (b.containerGroup === "(empty)") return -1;
+              const empty = this.t("common.empty");
+              if (a.containerGroup === empty) return 1;
+              if (b.containerGroup === empty) return -1;
               return a.containerGroup.localeCompare(b.containerGroup);
             }
           }
@@ -791,7 +801,7 @@ export default defineComponent({
     },
     
     getNewVersion(container: any) {
-      let newVersion = "unknown";
+      let newVersion = this.t("common.unknown");
       if (container.result?.created && container.image?.created !== container.result.created) {
         newVersion = (this as any).$filters.dateTime(container.result.created);
       }
@@ -827,14 +837,25 @@ export default defineComponent({
     async copyToClipboard(kind: string, value: string) {
       const copied = await copyToClipboard(value);
       if (copied) {
-        (this as any).$eventBus.emit("notify", `${kind} copied to clipboard`);
+        (this as any).$eventBus.emit(
+          "notify",
+          this.t("common.copiedToClipboard", { what: kind })
+        );
       } else {
         (this as any).$eventBus.emit(
           "notify",
-          `Unable to copy ${kind} to clipboard`,
+          this.t("common.copyFailed", { what: kind }),
           "warning"
         );
       }
+    },
+
+    /**
+     * Format a timestamp according to the current UI locale.
+     * @param value epoch millis
+     */
+    formatDateTime(value: number | string): string {
+      return new Date(value).toLocaleString(intlLocale(currentLocale()));
     },
 
     confirmDelete(container: any) {
@@ -853,7 +874,7 @@ export default defineComponent({
           this.selectedContainer = null;
         }
       } catch (e: any) {
-        (this as any).$eventBus.emit("notify", `Error when trying to delete the container (${e.message})`, "error");
+        (this as any).$eventBus.emit("notify", this.t("containers.errorsDelete", { message: e.message }), "error");
       }
       this.containerToDelete = null;
     },
@@ -920,7 +941,7 @@ export default defineComponent({
       } catch (e: any) {
         (this as any).$eventBus?.emit(
           "notify",
-          `Error when trying to refresh containers (${e.message})`,
+          this.t("containers.errorsRefresh", { message: e.message }),
           "error",
         );
       }
@@ -971,12 +992,12 @@ export default defineComponent({
         if (this.selectedContainer && this.selectedContainer.id === updated.id) {
           this.selectedContainer = { ...this.selectedContainer, ...updated };
         }
-        (this as any).$eventBus.emit("notify", "Update snoozed successfully");
+        (this as any).$eventBus.emit("notify", this.t("containers.snooze.success"));
         this.dialogSnooze = false;
       } catch (e: any) {
         (this as any).$eventBus.emit(
           "notify",
-          `Failed to snooze update (${e.message})`,
+          this.t("containers.snooze.error", { message: e.message }),
           "error",
         );
       } finally {
@@ -995,11 +1016,11 @@ export default defineComponent({
         if (this.selectedContainer && this.selectedContainer.id === updated.id) {
           this.selectedContainer = { ...this.selectedContainer, ...updated };
         }
-        (this as any).$eventBus.emit("notify", "Update unsnoozed successfully");
+        (this as any).$eventBus.emit("notify", this.t("containers.snooze.unsnoozeSuccess"));
       } catch (e: any) {
         (this as any).$eventBus.emit(
           "notify",
-          `Failed to unsnooze update (${e.message})`,
+          this.t("containers.snooze.unsnoozeError", { message: e.message }),
           "error",
         );
       }
@@ -1071,7 +1092,7 @@ export default defineComponent({
       });
     } catch (e: any) {
       next((vm: any) => {
-        vm.$eventBus.emit("notify", `Error when trying to get the containers (${e.message})`, "error");
+        vm.$eventBus.emit("notify", vm.t("containers.errorsLoad", { message: e.message }), "error");
       });
     }
   },

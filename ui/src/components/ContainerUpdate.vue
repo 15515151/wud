@@ -10,9 +10,11 @@
     >
       <div class="d-flex align-center justify-space-between flex-wrap" style="gap: 8px">
         <div>
-          <div class="font-weight-medium">Update in cool-down</div>
+          <div class="font-weight-medium">{{ t('update.inCoolDown') }}</div>
           <div class="text-caption">
-            A new version is available but currently held in cool-down period{{ coolingDownUntil ? ` until ${new Date(coolingDownUntil).toLocaleString()}` : '' }}.
+            {{ coolingDownUntil
+              ? t('update.coolDownUntil', { date: formatDateTime(coolingDownUntil) })
+              : t('update.coolDownNoDate') }}
           </div>
         </div>
         <v-btn
@@ -23,7 +25,7 @@
           prepend-icon="mdi-lightning-bolt"
           @click="$emit('override-cooldown')"
         >
-          Update now
+          {{ t('update.updateNow') }}
         </v-btn>
       </div>
     </v-alert>
@@ -36,9 +38,11 @@
       icon="mdi-bell-sleep"
       class="mb-3"
     >
-      <div class="font-weight-medium">Update snoozed</div>
+      <div class="font-weight-medium">{{ t('update.snoozed') }}</div>
       <div class="text-caption">
-        Version {{ snoozedVersion }} is snoozed{{ snoozedUntil ? ` until ${new Date(snoozedUntil).toLocaleString()}` : ' indefinitely' }}.
+        {{ snoozedUntil
+          ? t('update.snoozedUntil', { version: snoozedVersion, date: formatDateTime(snoozedUntil) })
+          : t('update.snoozedIndefinitely', { version: snoozedVersion }) }}
       </div>
     </v-alert>
 
@@ -48,7 +52,7 @@
           <v-icon color="secondary">mdi-tag</v-icon>
         </template>
         <v-list-item-title>
-          Tag
+          {{ t('update.tag') }}
           <v-chip v-if="semver" size="x-small" variant="outlined" color="success" label
             >semver</v-chip
           >
@@ -62,12 +66,12 @@
                 size="small"
                 icon
                 v-bind="props"
-                @click="copyToClipboard('update tag', result.tag)"
+                @click="copyToClipboard(t('update.tag'), result.tag)"
               >
                 <v-icon size="small">mdi-clipboard</v-icon>
               </v-btn>
             </template>
-            <span class="text-caption">Copy to clipboard</span>
+            <span class="text-caption">{{ t('common.copyToClipboard') }}</span>
           </v-tooltip>
         </v-list-item-subtitle>
       </v-list-item>
@@ -75,7 +79,7 @@
         <template v-slot:prepend>
           <v-icon color="secondary">mdi-package-variant</v-icon>
         </template>
-        <v-list-item-title>Version</v-list-item-title>
+        <v-list-item-title>{{ t('update.version') }}</v-list-item-title>
         <v-list-item-subtitle>
           {{ result.version }}
         </v-list-item-subtitle>
@@ -84,7 +88,7 @@
         <template v-slot:prepend>
           <v-icon color="secondary">mdi-calendar-clock</v-icon>
         </template>
-        <v-list-item-title>Built</v-list-item-title>
+        <v-list-item-title>{{ t('update.built') }}</v-list-item-title>
         <v-list-item-subtitle>
           {{ $filters.dateTime(result.created) }}
         </v-list-item-subtitle>
@@ -93,7 +97,7 @@
         <template v-slot:prepend>
           <v-icon color="secondary">mdi-link</v-icon>
         </template>
-        <v-list-item-title>Link</v-list-item-title>
+        <v-list-item-title>{{ t('update.link') }}</v-list-item-title>
         <v-list-item-subtitle
           ><a :href="result.link" target="_blank">{{ result.link }}</a>
         </v-list-item-subtitle>
@@ -102,7 +106,7 @@
         <template v-slot:prepend>
           <v-icon color="secondary">mdi-function-variant</v-icon>
         </template>
-        <v-list-item-title> Digest </v-list-item-title>
+        <v-list-item-title>{{ t('update.digest') }}</v-list-item-title>
         <v-list-item-subtitle>
           {{ result.digest }}
           <v-tooltip bottom>
@@ -112,12 +116,12 @@
                 size="small"
                 icon
                 v-bind="props"
-                @click="copyToClipboard('update digest', result.digest)"
+                @click="copyToClipboard(t('update.digest'), result.digest)"
               >
                 <v-icon size="small">mdi-clipboard</v-icon>
               </v-btn>
             </template>
-            <span class="text-caption">Copy to clipboard</span>
+            <span class="text-caption">{{ t('common.copyToClipboard') }}</span>
           </v-tooltip>
         </v-list-item-subtitle>
       </v-list-item>
@@ -136,21 +140,27 @@
           >
           <v-icon v-else color="warning">mdi-alert</v-icon>
         </template>
-        <v-list-item-title>Update kind</v-list-item-title>
+        <v-list-item-title>{{ t('update.updateKindLabel') }}</v-list-item-title>
         <v-list-item-subtitle>
           {{ updateKindFormatted }}
         </v-list-item-subtitle>
       </v-list-item>
     </v-list>
-    <v-card-text v-else>No update available</v-card-text>
+    <v-card-text v-else>{{ t('update.noUpdateAvailable') }}</v-card-text>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 import { copyToClipboard } from "@/services/clipboard";
+import { intlLocale, currentLocale } from "@/i18n";
 
 export default defineComponent({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   emits: ["override-cooldown"],
   props: {
     canWrite: {
@@ -192,25 +202,39 @@ export default defineComponent({
   },
   computed: {
     updateKindFormatted() {
-      let kind = "Unknown";
+      let kind = this.t("common.unknown");
       if (this.updateKind) {
         kind = this.updateKind.kind;
       }
       if (this.updateKind?.semverDiff) {
         kind = this.updateKind.semverDiff;
       }
-      return kind;
+      // Translate known backend enum values, keep unknown ones as-is.
+      const key = `status.${kind}`;
+      const translated = this.t(key);
+      return translated === key ? kind : translated;
     },
   },
   methods: {
+    /**
+     * Format a timestamp according to the current UI locale.
+     * @param value epoch millis
+     */
+    formatDateTime(value: number | string): string {
+      return new Date(value).toLocaleString(intlLocale(currentLocale()));
+    },
+
     async copyToClipboard(kind: string, value: string) {
       const copied = await copyToClipboard(value);
       if (copied) {
-        (this as any).$eventBus.emit("notify", `${kind} copied to clipboard`);
+        (this as any).$eventBus.emit(
+          "notify",
+          this.t("common.copiedToClipboard", { what: kind })
+        );
       } else {
         (this as any).$eventBus.emit(
           "notify",
-          `Unable to copy ${kind} to clipboard`,
+          this.t("common.copyFailed", { what: kind }),
           "warning"
         );
       }

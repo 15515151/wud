@@ -8,7 +8,7 @@
       <v-toolbar color="surface" density="compact" class="border-b px-2">
         <v-icon color="primary" class="mr-2">mdi-test-tube</v-icon>
         <v-toolbar-title class="text-subtitle-1 font-weight-bold">
-          Test Trigger
+          {{ t('testTrigger.title') }}
         </v-toolbar-title>
         <v-spacer />
         <v-btn icon="mdi-close" variant="text" size="small" @click="close"></v-btn>
@@ -16,12 +16,12 @@
 
       <v-card-text class="pa-4">
         <div class="text-caption text-grey mb-3">
-          Simulate a container update notification for
+          {{ t('testTrigger.subtitle') }}
           <strong class="text-high-emphasis">{{ trigger?.type }} / {{ trigger?.name }}</strong>.
         </div>
 
         <v-autocomplete
-          label="Source Container"
+          :label="t('testTrigger.sourceContainer')"
           v-model="selectedContainerId"
           :items="containerOptions"
           variant="outlined"
@@ -32,7 +32,7 @@
         />
 
         <v-text-field
-          label="Container ID"
+          :label="t('testTrigger.containerId')"
           v-model="container.id"
           :disabled="!!selectedContainerId"
           variant="outlined"
@@ -42,7 +42,7 @@
         />
 
         <v-text-field
-          label="Container Name"
+          :label="t('testTrigger.containerName')"
           v-model="container.name"
           :disabled="!!selectedContainerId"
           variant="outlined"
@@ -52,7 +52,7 @@
         />
 
         <v-text-field
-          label="Container Watcher"
+          :label="t('testTrigger.containerWatcher')"
           v-model="container.watcher"
           :disabled="!!selectedContainerId"
           variant="outlined"
@@ -62,7 +62,7 @@
         />
 
         <v-select
-          label="Update Kind"
+          :label="t('testTrigger.updateKind')"
           v-model="container.updateKind.kind"
           :items="['digest', 'tag']"
           variant="outlined"
@@ -73,7 +73,7 @@
 
         <v-select
           v-if="container.updateKind.kind === 'tag'"
-          label="Update Semver Diff"
+          :label="t('testTrigger.updateSemverDiff')"
           v-model="container.updateKind.semverDiff"
           :items="['major', 'minor', 'patch']"
           variant="outlined"
@@ -83,7 +83,7 @@
         />
 
         <v-text-field
-          label="Local Value"
+          :label="t('testTrigger.localValue')"
           v-model="container.updateKind.localValue"
           variant="outlined"
           density="compact"
@@ -92,7 +92,7 @@
         />
 
         <v-text-field
-          label="Remote Value"
+          :label="t('testTrigger.remoteValue')"
           v-model="container.updateKind.remoteValue"
           variant="outlined"
           density="compact"
@@ -101,7 +101,7 @@
         />
 
         <v-text-field
-          label="Release Notes / Result Link"
+          :label="t('testTrigger.resultLink')"
           v-model="container.updateKind.result.link"
           variant="outlined"
           density="compact"
@@ -113,7 +113,7 @@
 
       <v-card-actions class="pa-3 justify-end bg-surface">
         <v-btn variant="outlined" size="small" @click="close">
-          Cancel
+          {{ t('common.cancel') }}
         </v-btn>
         <v-btn
           variant="flat"
@@ -123,7 +123,7 @@
           :loading="isTriggering"
           prepend-icon="mdi-play"
         >
-          Run Trigger
+          {{ t('testTrigger.run') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -134,9 +134,14 @@
 import { getAllContainers } from "@/services/container";
 import { runTrigger } from "@/services/trigger";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "TriggerTestDialog",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   props: {
     modelValue: {
       type: Boolean,
@@ -177,7 +182,7 @@ export default defineComponent({
   computed: {
     containerOptions(): any[] {
       const mockOption = {
-        title: "Mock Container (Sample data)",
+        title: this.t("testTrigger.mockContainer"),
         value: null,
       };
       const realOptions = (this.containers || []).map((c: any) => ({
@@ -256,12 +261,12 @@ export default defineComponent({
           triggerName: this.trigger.name,
           container: payload,
         });
-        (this as any).$eventBus?.emit("notify", "Trigger executed with success");
+        (this as any).$eventBus?.emit("notify", this.t("triggers.success"));
         this.close();
       } catch (err: any) {
         (this as any).$eventBus?.emit(
           "notify",
-          `Trigger executed with error (${err.message})`,
+          this.t("triggers.error", { message: err.message }),
           "error",
         );
       } finally {

@@ -23,7 +23,7 @@
         variant="text"
         size="small"
         density="comfortable"
-        aria-label="Close"
+        :aria-label="t('common.close')"
         class="close-button"
         @click="closeSnackbar"
       >
@@ -35,9 +35,14 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "SnackBar",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
 
   props: {
     show: {

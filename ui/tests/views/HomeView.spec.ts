@@ -59,15 +59,15 @@ describe('HomeView', () => {
   });
 
   it('displays correct counts', () => {
-    expect(wrapper.text()).toContain('2 containers');
-    expect(wrapper.text()).toContain('1 triggers');
-    expect(wrapper.text()).toContain('2 watchers');
-    expect(wrapper.text()).toContain('3 registries');
+    expect(wrapper.text()).toContain('2 个容器');
+    expect(wrapper.text()).toContain('1 个触发器');
+    expect(wrapper.text()).toContain('2 个监视器');
+    expect(wrapper.text()).toContain('3 个镜像仓库');
   });
 
   it('displays update warning when updates are available', () => {
-    expect(wrapper.text()).toContain('1 updates available');
-    const updateBtn = wrapper.findAll('.v-btn-stub').find(w => w.text().includes('updates available'));
+    expect(wrapper.text()).toContain('1 个更新可用');
+    const updateBtn = wrapper.findAll('.v-btn-stub').find(w => w.text().includes('个更新可用'));
     expect(updateBtn.attributes('style')).not.toContain('pointer-events: none');
   });
 
@@ -75,8 +75,8 @@ describe('HomeView', () => {
     await wrapper.setData({
       containersToUpdateCount: 0
     });
-    expect(wrapper.text()).toContain('all containers are up-to-date');
-    const updateBtn = wrapper.findAll('.v-btn-stub').find(w => w.text().includes('up-to-date'));
+    expect(wrapper.text()).toContain('所有容器均为最新状态');
+    const updateBtn = wrapper.findAll('.v-btn-stub').find(w => w.text().includes('所有容器均为最新状态'));
     expect(updateBtn.attributes('style')).toContain('pointer-events: none');
   });
   

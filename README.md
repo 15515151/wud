@@ -75,6 +75,8 @@ flowchart LR
   Flexible versioning strategies: target `semver` (major, minor, patch), match custom regular expressions, pin versions, or define include/exclude tag rules.
 - 🖥️ **Interactive Web UI & REST API**  
   Clean, responsive web dashboard to inspect container statuses, trigger manual update checks, and query data via a full-featured REST API.
+- 🌐 **Multilingual Web UI**  
+  Fully translated interface with **Simplified Chinese** (default) and **English**, switchable on the fly from your profile and remembered per user account.
 - 📊 **Prometheus & Grafana Ready**  
   Built-in Prometheus `/metrics` endpoint and pre-built Grafana dashboards for observability.
 - 🔒 **Enterprise-Grade Authentication & RBAC**  

@@ -24,7 +24,7 @@ describe('AppBar', () => {
 
   it('renders view name when not on home', () => {
     if (wrapper) {
-      expect(wrapper.text()).toContain('containers');
+      expect(wrapper.text()).toContain('容器');
     } else {
       expect(true).toBe(true);
     }

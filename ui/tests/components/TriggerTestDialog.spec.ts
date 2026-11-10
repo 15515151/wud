@@ -58,9 +58,9 @@ describe('TriggerTestDialog.vue', () => {
       },
     });
 
-    expect(wrapper.text()).toContain('Test Trigger');
+    expect(wrapper.text()).toContain('测试触发器');
     expect(wrapper.text()).toContain('slack / myslack');
-    expect(wrapper.html()).toContain('Source Container');
+    expect(wrapper.html()).toContain('来源容器');
   });
 
   it('loads containers on mount', async () => {

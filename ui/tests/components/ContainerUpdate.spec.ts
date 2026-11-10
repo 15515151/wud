@@ -129,14 +129,14 @@ describe('ContainerUpdate', () => {
 
     it('renders the remote version reported by the registry', () => {
       const available = mountAvailable(mockResult);
-      expect(available.text()).toContain('Version');
+      expect(available.text()).toContain('版本');
       expect(available.text()).toContain('2.3.7');
       available.unmount();
     });
 
     it('renders the remote build date', () => {
       const available = mountAvailable(mockResult);
-      expect(available.text()).toContain('Built');
+      expect(available.text()).toContain('构建时间');
       available.unmount();
     });
 
@@ -145,8 +145,10 @@ describe('ContainerUpdate', () => {
         tag: '2.0.0',
         digest: 'sha256:abcdef123456'
       });
-      expect(available.text()).not.toContain('Version');
-      expect(available.text()).not.toContain('Built');
+      // '版本' alone is a substring of the update-kind label '主要版本', so
+      // assert on the dedicated list item titles instead.
+      expect(available.findAll('.v-list-item-title').map((n: any) => n.text())).not.toContain('版本');
+      expect(available.text()).not.toContain('构建时间');
       available.unmount();
     });
   });
@@ -163,8 +165,8 @@ describe('ContainerUpdate', () => {
       updateAvailable: false,
     });
 
-    expect(wrapper.text()).toContain('Update in cool-down');
-    expect(wrapper.text()).toContain('held in cool-down period');
+    expect(wrapper.text()).toContain('更新冷却中');
+    expect(wrapper.text()).toContain('但当前处于冷却期');
   });
 
   it('emits override-cooldown when Update now button is clicked in cool-down alert', async () => {
@@ -177,7 +179,7 @@ describe('ContainerUpdate', () => {
     });
 
     const buttons = wrapper.findAll('button');
-    const updateNowBtn = buttons.find((b: any) => b.text().includes('Update now'));
+    const updateNowBtn = buttons.find((b: any) => b.text().includes('立即更新'));
     expect(updateNowBtn).toBeDefined();
     await updateNowBtn.trigger('click');
 

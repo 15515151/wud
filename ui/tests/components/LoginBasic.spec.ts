@@ -19,7 +19,7 @@ describe('LoginBasic', () => {
 
   it('renders login form with username and password fields', () => {
     expect(wrapper.find('.v-text-field').exists()).toBe(true);
-    expect(wrapper.text()).toContain('Login');
+    expect(wrapper.text()).toContain('登录');
   });
 
   it('has proper autocomplete attributes', () => {
@@ -90,7 +90,7 @@ describe('LoginBasic', () => {
     await wrapper.vm.login();
 
     expect(wrapper.emitted('authentication-success')).toBeFalsy();
-    expect(wrapper.vm.$eventBus.emit).toHaveBeenCalledWith('notify', 'Username or password error', 'error');
+    expect(wrapper.vm.$eventBus.emit).toHaveBeenCalledWith('notify', '用户名或密码错误', 'error');
   });
 
   it('shows loading state during login', async () => {

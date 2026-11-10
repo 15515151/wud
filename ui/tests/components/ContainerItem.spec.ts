@@ -208,7 +208,7 @@ describe('ContainerItem', () => {
     expect(wrapper.vm.canWrite).toBe(true);
     expect(wrapper.vm.dialogUpdate).toBe(false);
 
-    const updateBtn = wrapper.findAll('.v-btn').find((btn) => btn.text().includes('Update'));
+    const updateBtn = wrapper.findAll('.v-btn').find((btn) => btn.text().includes('更新'));
     expect(updateBtn).toBeDefined();
 
     await updateBtn.trigger('click');
@@ -225,7 +225,7 @@ describe('ContainerItem', () => {
     });
     await wrapper.vm.$nextTick();
 
-    const updateBtn = wrapper.findAll('.v-btn').find((btn) => btn.text().includes('Update'));
+    const updateBtn = wrapper.findAll('.v-btn').find((btn) => btn.text().includes('更新'));
     expect(updateBtn).toBeUndefined();
   });
 
@@ -237,7 +237,7 @@ describe('ContainerItem', () => {
     await wrapper.vm.$nextTick();
 
     expect(wrapper.vm.canWrite).toBe(false);
-    const updateBtn = wrapper.findAll('.v-btn').find((btn) => btn.text().includes('Update'));
+    const updateBtn = wrapper.findAll('.v-btn').find((btn) => btn.text().includes('更新'));
     expect(updateBtn).toBeUndefined();
   });
 
@@ -248,7 +248,7 @@ describe('ContainerItem', () => {
         isOfficial: true,
       },
     });
-    expect(wrapper.text()).toContain('Official');
+    expect(wrapper.text()).toContain('官方');
   });
 
   it('hides official badge when isOfficial is false or not set', async () => {
@@ -258,7 +258,7 @@ describe('ContainerItem', () => {
         isOfficial: false,
       },
     });
-    expect(wrapper.text()).not.toContain('Official');
+    expect(wrapper.text()).not.toContain('官方');
   });
 
   it('computes docUrl from documentationUrl or link', async () => {
@@ -296,9 +296,9 @@ describe('ContainerItem', () => {
     await wrapper.vm.$nextTick();
 
     const buttons = wrapper.findAll('.v-card-actions .v-btn');
-    const docsBtn = buttons.find((btn) => btn.text().includes('Docs'));
-    const changelogBtn = buttons.find((btn) => btn.text().includes('Changelog'));
-    const sourceBtn = buttons.find((btn) => btn.text().includes('Source'));
+    const docsBtn = buttons.find((btn) => btn.text().includes('文档'));
+    const changelogBtn = buttons.find((btn) => btn.text().includes('更新日志'));
+    const sourceBtn = buttons.find((btn) => btn.text().includes('源代码'));
 
     expect(docsBtn).toBeDefined();
     expect(docsBtn.attributes('href')).toBe('https://docs.example.com');
@@ -326,10 +326,10 @@ describe('ContainerItem', () => {
     await wrapper.vm.$nextTick();
 
     const buttons = wrapper.findAll('.v-card-actions .v-btn');
-    const releaseNotesBtn = buttons.find((btn) => btn.text().includes('Release notes'));
+    const releaseNotesBtn = buttons.find((btn) => btn.text().includes('发布说明'));
 
     expect(releaseNotesBtn).toBeDefined();
     expect(releaseNotesBtn.attributes('href')).toBe('https://github.com/org/repo/releases/tag/v2.0.0');
-    expect(releaseNotesBtn.attributes('title')).toBe('Release notes (2.0.0)');
+    expect(releaseNotesBtn.attributes('title')).toBe('发布说明（2.0.0）');
   });
 });

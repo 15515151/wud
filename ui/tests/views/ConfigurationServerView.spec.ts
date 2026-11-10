@@ -129,6 +129,6 @@ describe('ConfigurationServerView.vue', () => {
     await vm.copyValue('port', 3000);
 
     expect(mockClipboard.writeText).toHaveBeenCalledWith('3000');
-    expect(emitMock).toHaveBeenCalledWith('notify', 'port copied to clipboard');
+    expect(emitMock).toHaveBeenCalledWith('notify', '已复制port到剪贴板');
   });
 });

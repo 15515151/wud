@@ -69,7 +69,7 @@ describe("ContainerTriggers.vue", () => {
 
     expect(containerService.getContainerTriggers).toHaveBeenCalledWith("container-a-123");
     expect((wrapper.vm as any).triggers).toEqual(triggersA);
-    expect(wrapper.text()).not.toContain("No triggers associated to the container");
+    expect(wrapper.text()).not.toContain("该容器未关联任何触发器");
     expect(wrapper.findAll(".container-trigger").length).toBe(2);
   });
 
@@ -88,13 +88,13 @@ describe("ContainerTriggers.vue", () => {
     });
 
     expect((wrapper.vm as any).loading).toBe(true);
-    expect(wrapper.text()).toContain("Loading triggers...");
+    expect(wrapper.text()).toContain("正在加载触发器…");
 
     resolvePromise!(triggersA);
     await flushPromises();
 
     expect((wrapper.vm as any).loading).toBe(false);
-    expect(wrapper.text()).not.toContain("Loading triggers...");
+    expect(wrapper.text()).not.toContain("正在加载触发器…");
   });
 
   it("displays empty message when container has no triggers", async () => {
@@ -109,7 +109,7 @@ describe("ContainerTriggers.vue", () => {
 
     await flushPromises();
 
-    expect(wrapper.text()).toContain("No triggers associated to the container");
+    expect(wrapper.text()).toContain("该容器未关联任何触发器");
     expect(wrapper.findAll(".container-trigger").length).toBe(0);
   });
 
@@ -184,7 +184,7 @@ describe("ContainerTriggers.vue", () => {
 
     await flushPromises();
     expect((wrapper.vm as any).triggers).toEqual([]);
-    expect(wrapper.text()).toContain("No triggers associated to the container");
+    expect(wrapper.text()).toContain("该容器未关联任何触发器");
   });
 
   it("handles getContainerTriggers error gracefully", async () => {
@@ -203,6 +203,6 @@ describe("ContainerTriggers.vue", () => {
 
     expect((wrapper.vm as any).loading).toBe(false);
     expect((wrapper.vm as any).triggers).toEqual([]);
-    expect(wrapper.text()).toContain("No triggers associated to the container");
+    expect(wrapper.text()).toContain("该容器未关联任何触发器");
   });
 });

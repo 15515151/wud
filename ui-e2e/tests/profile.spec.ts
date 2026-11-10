@@ -4,9 +4,9 @@ test.describe('User Profile & Personal API Tokens', () => {
   test.beforeEach(async ({ page }) => {
     // Log in as default admin
     await page.goto('/');
-    await page.getByLabel('Username').fill('john');
-    await page.getByLabel('Password', { exact: true }).fill('doe');
-    await page.getByRole('button', { name: 'Login' }).click();
+    await page.getByLabel('用户名').fill('john');
+    await page.getByLabel('密码', { exact: true }).fill('doe');
+    await page.getByRole('button', { name: '登录' }).click();
     await expect(page).toHaveURL('/');
   });
 
@@ -16,14 +16,14 @@ test.describe('User Profile & Personal API Tokens', () => {
     await expect(page).toHaveURL(/.*profile/);
 
     // Verify Profile header
-    await expect(page.getByText('My Profile')).toBeVisible();
+    await expect(page.getByText('我的资料')).toBeVisible();
     await expect(page.locator('.text-h6').getByText('john')).toBeVisible();
-    await expect(page.getByText(/Admin/i).first()).toBeVisible();
+    await expect(page.getByText('管理员').first()).toBeVisible();
 
     // Verify Appearance section & theme radios
-    await expect(page.getByText('Appearance')).toBeVisible();
-    const darkRadio = page.getByLabel('Dark theme');
-    const lightRadio = page.getByLabel('Light theme');
+    await expect(page.getByText('外观')).toBeVisible();
+    const darkRadio = page.getByLabel('深色主题');
+    const lightRadio = page.getByLabel('浅色主题');
     await expect(darkRadio).toBeVisible();
     await expect(lightRadio).toBeVisible();
 
@@ -36,8 +36,8 @@ test.describe('User Profile & Personal API Tokens', () => {
     await expect(page.locator('.v-application')).toHaveClass(/v-theme--light/);
 
     // Verify Personal API Tokens section
-    await expect(page.getByText('Personal API Tokens')).toBeVisible();
-    const generateBtn = page.getByRole('button', { name: 'Generate Token' });
+    await expect(page.getByText('个人 API Token')).toBeVisible();
+    const generateBtn = page.getByRole('button', { name: '生成 Token' });
     await expect(generateBtn).toBeVisible();
 
     // 1. Generate an API Token
@@ -46,25 +46,25 @@ test.describe('User Profile & Personal API Tokens', () => {
 
     const createDialog = page.locator('.v-dialog');
     await expect(createDialog).toBeVisible();
-    await expect(createDialog.getByText('Generate API Token')).toBeVisible();
+    await expect(createDialog.getByText('生成 Token')).toBeVisible();
 
-    await createDialog.getByLabel('Token Name / Description').fill(tokenName);
+    await createDialog.getByLabel('Token 名称 / 描述').fill(tokenName);
     // Read is checked by default; also check Write
-    await createDialog.getByLabel('Write (Trigger updates, manage container updates)').check();
+    await createDialog.getByLabel('读写（触发更新、管理容器更新）').check();
 
-    await createDialog.getByRole('button', { name: 'Generate', exact: true }).click();
-    await expect(createDialog.getByText('Generate API Token')).not.toBeVisible();
+    await createDialog.getByRole('button', { name: '生成', exact: true }).click();
+    await expect(createDialog.getByText('生成 Token')).not.toBeVisible();
 
     // 2. Secret Display Dialog
     const secretDialog = page.locator('.v-dialog');
     await expect(secretDialog).toBeVisible();
-    await expect(secretDialog.getByText('API Token Generated')).toBeVisible();
+    await expect(secretDialog.getByText('API Token 已生成')).toBeVisible();
     const secretInput = secretDialog.locator('input[readonly]');
     await expect(secretInput).toBeVisible();
     const rawSecret = await secretInput.inputValue();
     expect(rawSecret).toMatch(/^wud_/);
 
-    await secretDialog.getByRole('button', { name: 'I Have Saved This Token' }).click();
+    await secretDialog.getByRole('button', { name: '我已保存该 Token' }).click();
     await expect(secretDialog).not.toBeVisible();
 
     // 3. Verify token appears in tokens table
@@ -74,12 +74,12 @@ test.describe('User Profile & Personal API Tokens', () => {
     await expect(tokenRow.getByText('WRITE')).toBeVisible();
 
     // 4. Revoke the token
-    await tokenRow.locator('button[title="Revoke token"]').click();
+    await tokenRow.locator('button[title="吊销 Token"]').click();
     const revokeDialog = page.locator('.v-dialog');
     await expect(revokeDialog).toBeVisible();
-    await expect(revokeDialog.locator('.v-card-title').getByText('Revoke Token')).toBeVisible();
+    await expect(revokeDialog.locator('.v-card-title').getByText('吊销 Token')).toBeVisible();
 
-    await revokeDialog.getByRole('button', { name: 'Revoke', exact: true }).click();
+    await revokeDialog.getByRole('button', { name: '吊销', exact: true }).click();
     await expect(revokeDialog).not.toBeVisible();
 
     // Verify token removed from table

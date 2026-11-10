@@ -221,7 +221,7 @@ describe("ContainerTrigger.vue", () => {
       triggerType: "discord",
       triggerName: "prod",
     });
-    expect(emitMock).toHaveBeenCalledWith("notify", "Trigger executed with success");
+    expect(emitMock).toHaveBeenCalledWith("notify", "触发器执行成功");
     expect(vm.isTriggering).toBe(false);
   });
 
@@ -252,7 +252,7 @@ describe("ContainerTrigger.vue", () => {
 
     expect(emitMock).toHaveBeenCalledWith(
       "notify",
-      "Trigger executed with error (Network error)",
+      "触发器执行失败（Network error）",
       "error"
     );
     expect(vm.isTriggering).toBe(false);
@@ -290,6 +290,6 @@ describe("ContainerTrigger.vue", () => {
       triggerName: "prod",
       overrideCooldown: true,
     });
-    expect(emitMock).toHaveBeenCalledWith("notify", "Trigger executed with success");
+    expect(emitMock).toHaveBeenCalledWith("notify", "触发器执行成功");
   });
 });

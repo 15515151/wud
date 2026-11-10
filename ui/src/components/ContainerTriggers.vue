@@ -7,7 +7,7 @@
         size="24"
         class="mr-2"
       />
-      <span class="text-caption text-grey">Loading triggers...</span>
+      <span class="text-caption text-grey">{{ t('triggers.loading') }}</span>
     </div>
     <v-row v-else-if="triggers && triggers.length > 0">
       <v-col v-for="trigger in triggers" :key="trigger.id" lg="6" sm="12">
@@ -19,7 +19,7 @@
         />
       </v-col>
     </v-row>
-    <v-card-text v-else> No triggers associated to the container </v-card-text>
+    <v-card-text v-else>{{ t('triggers.empty') }}</v-card-text>
   </v-container>
 </template>
 
@@ -27,8 +27,13 @@
 import ContainerTrigger from "@/components/ContainerTrigger.vue";
 import { getContainerTriggers } from "@/services/container";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   components: {
     ContainerTrigger,
   },

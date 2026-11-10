@@ -24,7 +24,7 @@
             {{ item.type }}
           </v-chip>
           <span class="text-caption text-grey ml-2" v-if="item.id && item.id !== item.name">
-            ID: {{ item.id }}
+            {{ t('users.id', { id: item.id }) }}
           </span>
         </div>
       </div>
@@ -38,10 +38,10 @@
     <!-- Configuration Section Header -->
     <div class="d-flex align-center justify-space-between mb-2">
       <span class="text-subtitle-2 font-weight-bold text-medium-emphasis">
-        Configuration Parameters
+        {{ t('configuration.parameters') }}
       </span>
       <v-chip size="x-small" variant="outlined" color="grey">
-        {{ configurationItems.length }} {{ configurationItems.length === 1 ? 'entry' : 'entries' }}
+        {{ t(configurationItems.length === 1 ? 'configuration.entry' : 'configuration.entries', { count: configurationItems.length }) }}
       </v-chip>
     </div>
 
@@ -62,7 +62,7 @@
                 color="grey"
                 class="opacity-60 hover-opacity-100"
                 @click.stop="copyValue(cfg.key, cfg.value)"
-                title="Copy value"
+                :title="t('configuration.copyValue')"
               ></v-btn>
             </div>
             <div>
@@ -80,7 +80,7 @@
               </template>
               <!-- Empty / Null Value or Empty Object -->
               <template v-else-if="cfg.value === undefined || cfg.value === null || cfg.value === '' || (typeof cfg.value === 'object' && Object.keys(cfg.value).length === 0)">
-                <span class="text-caption text-grey font-italic">&lt;empty&gt;</span>
+                <span class="text-caption text-grey font-italic">{{ t('common.empty') }}</span>
               </template>
               <!-- Complex Object or Array -->
               <template v-else-if="typeof cfg.value === 'object'">
@@ -100,8 +100,8 @@
 
       <div v-else class="pa-6 text-center text-grey">
         <v-icon size="36" class="mb-2 opacity-50">mdi-tune-variant</v-icon>
-        <div class="text-body-2">Default configuration</div>
-        <div class="text-caption text-grey">No custom parameters set</div>
+        <div class="text-body-2">{{ t('configuration.defaultConfiguration') }}</div>
+        <div class="text-caption text-grey">{{ t('configuration.noCustomParameters') }}</div>
       </div>
     </v-card>
   </div>
@@ -111,9 +111,14 @@
 import IconRenderer from "@/components/IconRenderer.vue";
 import { copyToClipboard } from "@/services/clipboard";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "ConfigurationDrawerContent",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   components: {
     IconRenderer,
   },
@@ -162,11 +167,14 @@ export default defineComponent({
           : String(value);
       const copied = await copyToClipboard(textToCopy);
       if (copied) {
-        (this as any).$eventBus?.emit("notify", `${key} copied to clipboard`);
+        (this as any).$eventBus?.emit(
+          "notify",
+          this.t("common.copiedToClipboard", { what: key })
+        );
       } else {
         (this as any).$eventBus?.emit(
           "notify",
-          `Unable to copy ${key} to clipboard`,
+          this.t("common.copyFailed", { what: key }),
           "warning"
         );
       }

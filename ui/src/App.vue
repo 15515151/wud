@@ -1,5 +1,5 @@
 <template>
-  <v-app class="main-background">
+  <v-app class="main-background" :lang="locale">
     <snack-bar
       :message="snackbarMessage"
       :show="snackbarShow"
@@ -39,6 +39,9 @@ import { getServer } from "@/services/server";
 import { eventService } from "@/services/event";
 import { useRoute } from "vue-router";
 import { useTheme } from "vuetify";
+import { useI18n } from "vue-i18n";
+import { setLocale } from "@/i18n";
+import { isSupportedLocale } from "@/i18n/types";
 
 export default defineComponent({
   components: {
@@ -49,6 +52,7 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const theme = useTheme();
+    const { t, locale } = useI18n();
     if (localStorage.darkMode === "true") {
       theme.global.name.value = "dark";
     }
@@ -65,7 +69,7 @@ export default defineComponent({
         .replace("/", "")
         .split("/")
         .map((item) => ({
-          text: item ? item : "Home",
+          text: item || t("nav.home"),
           disabled: false,
           href: "",
         }));
@@ -80,6 +84,9 @@ export default defineComponent({
       if (userData?.preferences?.theme) {
         theme.global.name.value = userData.preferences.theme;
         localStorage.darkMode = String(userData.preferences.theme === "dark");
+      }
+      if (isSupportedLocale(userData?.preferences?.locale)) {
+        setLocale(userData.preferences.locale);
       }
       eventService.connect();
     };
@@ -145,6 +152,7 @@ export default defineComponent({
       user,
       items,
       authenticated,
+      locale,
     };
   },
 });

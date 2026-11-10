@@ -24,7 +24,7 @@ describe('ConfigurationDrawerContent.vue', () => {
 
     expect(wrapper.text()).toContain('myhub');
     expect(wrapper.text()).toContain('hub');
-    expect(wrapper.text()).toContain('ID: hub.myhub');
+    expect(wrapper.text()).toContain('ID：hub.myhub');
   });
 
   it('computes and formats configuration items', () => {
@@ -54,7 +54,7 @@ describe('ConfigurationDrawerContent.vue', () => {
       },
     });
 
-    expect(wrapper.text()).toContain('Default configuration');
+    expect(wrapper.text()).toContain('默认配置');
   });
 
   it('copies value to clipboard', async () => {

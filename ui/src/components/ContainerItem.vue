@@ -9,7 +9,7 @@
     >
       <div class="text-h6">
         {{ this.groupingLabel }} =
-        {{ this.container.labels?.[this.groupingLabel] ?? "(empty)" }}
+        {{ this.container.labels?.[this.groupingLabel] ?? t('common.empty') }}
       </div>
       <v-divider class="pb-3"></v-divider>
     </div>
@@ -76,10 +76,10 @@
                 v-bind="props"
               >
                 <v-icon start size="small">mdi-check-decagram</v-icon>
-                Official
+                {{ t('detail.official') }}
               </v-chip>
             </template>
-            <span class="text-caption">Official Docker Image</span>
+            <span class="text-caption">{{ t('detail.officialImage') }}</span>
           </v-tooltip>
           <span v-if="smAndUp && container.updateAvailable" class="d-flex align-center" style="gap: 4px">
             <v-icon>mdi-arrow-right</v-icon>
@@ -91,7 +91,7 @@
                   :color="newVersionClass"
                   v-bind="props"
                   @click="
-                    copyToClipboard('container new version', newVersion);
+                    copyToClipboard(t('containers.copyNewVersion'), newVersion);
                     $event.stopImmediatePropagation();
                   "
                 >
@@ -99,7 +99,7 @@
                   <v-icon end size="small">mdi-clipboard-outline</v-icon>
                 </v-chip>
               </template>
-              <span class="text-caption">Copy to clipboard</span>
+              <span class="text-caption">{{ t('common.copyToClipboard') }}</span>
             </v-tooltip>
           </span>
         </div>
@@ -128,19 +128,19 @@
             ref="tabs"
           >
             <v-tab v-if="container.result">
-              <span v-if="smAndUp">Update</span>
+              <span v-if="smAndUp">{{ t('containers.tabs.update') }}</span>
               <v-icon>mdi-package-down</v-icon>
             </v-tab>
             <v-tab>
-              <span v-if="smAndUp">Triggers</span>
+              <span v-if="smAndUp">{{ t('containers.tabs.triggers') }}</span>
               <v-icon>mdi-bell-ring</v-icon>
             </v-tab>
             <v-tab>
-              <span v-if="smAndUp">Image</span>
+              <span v-if="smAndUp">{{ t('containers.tabs.image') }}</span>
               <v-icon>mdi-package-variant-closed</v-icon>
             </v-tab>
             <v-tab>
-              <span v-if="smAndUp">Container</span>
+              <span v-if="smAndUp">{{ t('containers.tabs.container') }}</span>
               <IconRenderer 
                 :icon="container.displayIcon"
                 :size="24"
@@ -148,7 +148,7 @@
               />
             </v-tab>
             <v-tab v-if="container.error">
-              <span v-if="smAndUp">Error</span>
+              <span v-if="smAndUp">{{ t('containers.tabs.error') }}</span>
               <v-icon>mdi-alert</v-icon>
             </v-tab>
           </v-tabs>
@@ -189,10 +189,10 @@
                   color="primary"
                   variant="flat"
                   class="mr-2"
-                  :title="container.isCoolingDown ? 'Override cooldown and update' : 'Update container'"
+                  :title="container.isCoolingDown ? t('containers.actions.overrideUpdateDetail') : t('containers.actions.updateContainerDetail')"
                   @click="dialogUpdate = true"
                 >
-                  {{ container.isCoolingDown ? 'Update now' : 'Update' }}
+                  {{ container.isCoolingDown ? t('containers.actions.updateNow') : t('containers.tabs.update') }}
                   <v-icon right>{{ container.isCoolingDown ? 'mdi-lightning-bolt' : 'mdi-package-down' }}</v-icon>
                 </v-btn>
 
@@ -202,11 +202,11 @@
                   color="secondary"
                   variant="outlined"
                   class="mr-2"
-                  title="Documentation"
+                  :title="t('containers.actions.documentation')"
                   :href="docUrl"
                   target="_blank"
                 >
-                  Docs
+                  {{ t('containers.actions.documentation') }}
                   <v-icon right>mdi-book-open-page-variant</v-icon>
                 </v-btn>
 
@@ -216,11 +216,11 @@
                   color="secondary"
                   variant="outlined"
                   class="mr-2"
-                  :title="container.updateAvailable ? ('Release notes' + (container.result?.tag ? ' (' + container.result.tag + ')' : '')) : 'Changelog'"
+                  :title="container.updateAvailable ? (container.result?.tag ? t('containers.releaseNotesFor', { version: container.result.tag }) : t('containers.actions.releaseNotes')) : t('containers.actions.changelog')"
                   :href="container.updateAvailable ? (container.result?.changelogUrl || container.changelogUrl) : container.changelogUrl"
                   target="_blank"
                 >
-                  {{ container.updateAvailable ? 'Release notes' : 'Changelog' }}
+                  {{ container.updateAvailable ? t('containers.actions.releaseNotes') : t('containers.actions.changelog') }}
                   <v-icon right>mdi-history</v-icon>
                 </v-btn>
 
@@ -230,11 +230,11 @@
                   color="secondary"
                   variant="outlined"
                   class="mr-2"
-                  title="Source Code"
+                  :title="t('containers.actions.sourceCode')"
                   :href="container.upstreamUrl"
                   target="_blank"
                 >
-                  Source
+                  {{ t('containers.actions.sourceCode') }}
                   <v-icon right>mdi-code-tags</v-icon>
                 </v-btn>
 
@@ -250,7 +250,7 @@
                       variant="outlined"
                       v-bind="props"
                     >
-                      Delete
+                      {{ t('common.delete') }}
                       <v-icon right>mdi-delete</v-icon>
                     </v-btn>
                   </template>
@@ -258,27 +258,21 @@
                   <v-card class="text-center">
                     <v-app-bar color="error" dark flat dense>
                       <v-toolbar-title class="text-body-1">
-                        Delete the container?
+                        {{ t('containers.delete.title') }}
                       </v-toolbar-title>
                     </v-app-bar>
                     <v-card-subtitle class="text-body-2">
                       <v-row class="mt-2" no-gutters>
                         <v-col>
-                          Delete
-                          <span class="font-weight-bold error--text">{{
-                            container.name
-                          }}</span>
-                          from the list?
+                          {{ t('containers.delete.question', { name: container.name }) }}
                           <br />
-                          <span class="font-italic"
-                            >(The real container won't be deleted)</span
-                          >
+                          <span class="font-italic">{{ t('containers.delete.hint') }}</span>
                         </v-col>
                       </v-row>
                       <v-row>
                         <v-col class="text-center">
                           <v-btn variant="outlined" @click="dialogDelete = false" small>
-                            Cancel
+                            {{ t('common.cancel') }}
                           </v-btn>
                           &nbsp;
                           <v-btn
@@ -289,7 +283,7 @@
                               deleteContainer();
                             "
                           >
-                            Delete
+                            {{ t('common.delete') }}
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -325,11 +319,13 @@ import ContainerUpdate from "@/components/ContainerUpdate.vue";
 import ContainerUpdateDialog from "@/components/ContainerUpdateDialog.vue";
 import IconRenderer from "@/components/IconRenderer.vue";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   setup() {
     const { smAndUp, mdAndUp } = useDisplay();
-    return { smAndUp, mdAndUp };
+    const { t } = useI18n();
+    return { smAndUp, mdAndUp, t };
   },
   components: {
     ContainerDetail,
@@ -401,7 +397,7 @@ export default defineComponent({
     },
 
     newVersion() {
-      let newVersion = "unknown";
+      let newVersion = this.t("common.unknown");
       if (
         this.container.result?.created &&
         this.container.image?.created !== this.container.result?.created
@@ -468,11 +464,14 @@ export default defineComponent({
     async copyToClipboard(kind: string, value: string) {
       const copied = await copyToClipboard(value);
       if (copied) {
-        (this as any).$eventBus.emit("notify", `${kind} copied to clipboard`);
+        (this as any).$eventBus.emit(
+          "notify",
+          this.t("common.copiedToClipboard", { what: kind })
+        );
       } else {
         (this as any).$eventBus.emit(
           "notify",
-          `Unable to copy ${kind} to clipboard`,
+          this.t("common.copyFailed", { what: kind }),
           "warning"
         );
       }

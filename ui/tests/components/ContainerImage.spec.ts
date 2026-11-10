@@ -30,7 +30,7 @@ describe('ContainerImage', () => {
     expect(wrapper.text()).toContain('hub');
     expect(wrapper.text()).toContain('latest');
     expect(wrapper.text()).toContain('linux / amd64');
-    expect(wrapper.text()).not.toContain('Version');
+    expect(wrapper.text()).not.toContain('版本');
   });
 
   it('renders version when present on image', () => {
@@ -43,7 +43,7 @@ describe('ContainerImage', () => {
       },
     });
 
-    expect(wrapper.text()).toContain('Version');
+    expect(wrapper.text()).toContain('版本');
     expect(wrapper.text()).toContain('1.2.3');
   });
 });

@@ -5,7 +5,7 @@
       <v-toolbar color="surface" density="compact" class="px-3 py-1">
         <v-icon :icon="watcherIcon" class="mr-2 text-primary" size="24"></v-icon>
         <div class="d-flex align-center">
-          <span class="text-subtitle-1 font-weight-bold mr-2">Watchers</span>
+          <span class="text-subtitle-1 font-weight-bold mr-2">{{ t('nav.watchers') }}</span>
           <v-chip size="x-small" color="primary" variant="tonal" class="font-weight-medium">
             {{ watchersFiltered.length }}
           </v-chip>
@@ -17,7 +17,7 @@
         <v-text-field
           v-model="search"
           prepend-inner-icon="mdi-magnify"
-          placeholder="Search watchers..."
+          :placeholder="t('configuration.searchPlaceholder', { section: t('nav.watchers') })"
           density="compact"
           variant="outlined"
           hide-details
@@ -33,7 +33,7 @@
           size="small"
           @click="refreshWatchers"
           :loading="isLoading"
-          title="Refresh"
+          :title="t('common.refresh')"
         ></v-btn>
       </v-toolbar>
 
@@ -77,9 +77,9 @@
         <template v-slot:no-data>
           <div class="pa-8 text-center text-grey">
             <v-icon size="64" class="mb-4 opacity-50">{{ watcherIcon }}</v-icon>
-            <div class="text-h6">No watchers found</div>
-            <div class="text-body-2" v-if="search">Try clearing your search</div>
-            <div class="text-body-2" v-else>No watchers configured</div>
+            <div class="text-h6">{{ t('configuration.noResults', { section: t('nav.watchers') }) }}</div>
+            <div class="text-body-2" v-if="search">{{ t('configuration.tryClearing') }}</div>
+            <div class="text-body-2" v-else>{{ t('configuration.notConfigured', { section: t('nav.watchers') }) }}</div>
           </div>
         </template>
       </v-data-table>
@@ -104,11 +104,11 @@
                 {{ selectedWatcher.name }}
               </div>
               <div class="text-caption text-grey text-truncate">
-                {{ selectedWatcher.type }} watcher details
+                {{ selectedWatcher.type }} · {{ t('configuration.details') }}
               </div>
             </div>
           </div>
-          <v-btn icon="mdi-close" variant="text" size="small" @click="drawerOpen = false" title="Close details"></v-btn>
+          <v-btn icon="mdi-close" variant="text" size="small" @click="drawerOpen = false" :title="t('containers.actions.closeDetails')"></v-btn>
         </v-toolbar>
 
         <!-- Drawer Body -->
@@ -127,8 +127,13 @@
 import ConfigurationDrawerContent from "@/components/ConfigurationDrawerContent.vue";
 import { getAllWatchers, getWatcherIcon } from "@/services/watcher";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   name: "ConfigurationWatchersView",
   components: {
     ConfigurationDrawerContent,
@@ -175,19 +180,19 @@ export default defineComponent({
     headers() {
       return [
         {
-          title: "Type",
+          title: this.t("configuration.tabs.type"),
           key: "type",
           value: (item: any) => item.type || "",
           sortable: true,
         },
         {
-          title: "Name",
+          title: this.t("configuration.tabs.name"),
           key: "name",
           value: (item: any) => item.name || "",
           sortable: true,
         },
         {
-          title: "Configuration",
+          title: this.t("configuration.tabs.configuration"),
           key: "configuration",
           value: (item: any) => Object.keys(item.configuration || {}).length,
           sortable: true,
@@ -211,7 +216,7 @@ export default defineComponent({
   methods: {
     getConfigurationCount(item: any): string {
       const count = Object.keys(item.configuration || {}).length;
-      return `${count} ${count === 1 ? "param" : "params"}`;
+      return this.t(count === 1 ? "configuration.entry" : "configuration.entries", { count });
     },
     onRowClick(event: any, row: any) {
       const item = row?.item?.raw || row?.item || row;
@@ -234,7 +239,7 @@ export default defineComponent({
       } catch (e: any) {
         (this as any).$eventBus?.emit(
           "notify",
-          `Error when trying to load the watchers (${e.message})`,
+          this.t("configuration.errors.watchers", { message: e.message }),
           "error"
         );
       } finally {
@@ -251,7 +256,7 @@ export default defineComponent({
       next((vm: any) => {
         vm.$eventBus?.emit(
           "notify",
-          `Error when trying to load the watchers (${e.message})`,
+          vm.t("configuration.errors.watchers", { message: e.message }),
           "error"
         );
       });

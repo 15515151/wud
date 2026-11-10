@@ -8,7 +8,7 @@
       <v-toolbar color="primary" density="compact" class="px-2">
         <v-icon class="mr-2">mdi-package-down</v-icon>
         <v-toolbar-title class="text-subtitle-1 font-weight-bold">
-          Update container
+          {{ t('updateDialog.title') }}
         </v-toolbar-title>
         <v-spacer />
         <v-btn
@@ -38,14 +38,14 @@
           style="gap: 16px"
         >
           <div class="text-center">
-            <div class="text-caption text-grey mb-1">Current version</div>
+            <div class="text-caption text-grey mb-1">{{ t('updateDialog.currentVersion') }}</div>
             <v-chip label size="small" variant="outlined" color="info">
               {{ currentVersion }}
             </v-chip>
           </div>
           <v-icon color="primary" size="small">mdi-arrow-right</v-icon>
           <div class="text-center">
-            <div class="text-caption text-grey mb-1">Available version</div>
+            <div class="text-caption text-grey mb-1">{{ t('updateDialog.availableVersion') }}</div>
             <v-chip label size="small" variant="flat" color="primary">
               {{ displayNewVersion }}
             </v-chip>
@@ -60,7 +60,7 @@
           icon="mdi-timer-sand"
           class="mb-3 text-caption"
         >
-          This container is currently in cool-down. Updating now will override the cooldown period and install the update immediately.
+          {{ t('updateDialog.coolDownWarning') }}
         </v-alert>
 
         <div v-if="loadingTriggers" class="text-center py-4">
@@ -70,7 +70,7 @@
             size="24"
             class="mr-2"
           />
-          <span class="text-caption text-grey">Loading triggers...</span>
+          <span class="text-caption text-grey">{{ t('updateDialog.loadingTriggers') }}</span>
         </div>
 
         <v-alert
@@ -80,7 +80,7 @@
           density="compact"
           class="mt-3 text-caption"
         >
-          No update trigger (docker, dockercompose, command, nomad) is configured for this container.
+          {{ t('updateDialog.noTrigger') }}
         </v-alert>
 
         <div
@@ -90,7 +90,7 @@
           <div class="d-flex align-center">
             <v-icon color="primary" size="small" class="mr-2">mdi-cog-play-outline</v-icon>
             <div>
-              <div class="text-caption text-grey">Target trigger</div>
+              <div class="text-caption text-grey">{{ t('updateDialog.targetTrigger') }}</div>
               <div class="text-body-2 font-weight-medium">
                 {{ singleTriggerLabel }}
               </div>
@@ -103,7 +103,7 @@
 
         <v-select
           v-else
-          label="Trigger to execute"
+          :label="t('updateDialog.triggerToExecute')"
           v-model="selectedTriggerKey"
           :items="triggerOptions"
           item-title="title"
@@ -124,7 +124,7 @@
           :disabled="isUpdating"
           @click="close"
         >
-          Cancel
+          {{ t('common.cancel') }}
         </v-btn>
         <v-btn
           variant="flat"
@@ -135,7 +135,7 @@
           :prepend-icon="container.isCoolingDown ? 'mdi-lightning-bolt' : 'mdi-package-down'"
           @click="confirmUpdate"
         >
-          {{ container.isCoolingDown ? 'Update now' : 'Update' }}
+          {{ container.isCoolingDown ? t('updateDialog.updateNow') : t('updateDialog.update') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -144,6 +144,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, PropType } from "vue";
+import { useI18n } from "vue-i18n";
 import { getContainerTriggers, runTrigger } from "@/services/container";
 
 // Kept in sync with UPDATE_TRIGGER_TYPES in app/triggers/associatedTriggers.ts,
@@ -212,7 +213,8 @@ export default defineComponent({
     const eventBus = inject("eventBus", null) as {
       emit: (event: string, ...args: unknown[]) => void;
     } | null;
-    return { eventBus };
+    const { t } = useI18n();
+    return { eventBus, t };
   },
   data() {
     return {
@@ -224,13 +226,13 @@ export default defineComponent({
   },
   computed: {
     containerDisplayName(): string {
-      return this.container?.displayName || this.container?.name || "Unknown container";
+      return this.container?.displayName || this.container?.name || this.t("updateDialog.unknownContainer");
     },
     containerImageName(): string {
       return this.container?.image?.name || this.container?.image?.path || "";
     },
     currentVersion(): string {
-      if (!this.container) return "unknown";
+      if (!this.container) return this.t("common.unknown");
       if (this.container.image?.tag?.value) {
         return this.container.image.tag.value;
       }
@@ -249,8 +251,8 @@ export default defineComponent({
       if (this.newVersion) {
         return this.newVersion;
       }
-      if (!this.container) return "unknown";
-      let version = "unknown";
+      if (!this.container) return this.t("common.unknown");
+      let version = this.t("common.unknown");
       if (
         this.container.result?.created &&
         this.container.image?.created !== this.container.result?.created
@@ -367,7 +369,7 @@ export default defineComponent({
         const bus = this.eventBus || (this as unknown as { $eventBus?: { emit: (e: string, ...a: unknown[]) => void } }).$eventBus;
         bus?.emit(
           "notify",
-          `Update triggered successfully for ${this.containerDisplayName}`,
+          this.t("updateDialog.success", { name: this.containerDisplayName }),
         );
         this.$emit("updated", this.selectedTrigger);
         this.close();
@@ -376,7 +378,7 @@ export default defineComponent({
         const errorMessage = err instanceof Error ? err.message : String(err);
         bus?.emit(
           "notify",
-          `Update triggered with error (${errorMessage})`,
+          this.t("updateDialog.error", { message: errorMessage }),
           "error",
         );
       } finally {

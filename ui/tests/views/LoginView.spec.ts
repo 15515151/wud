@@ -220,7 +220,7 @@ describe('LoginView', () => {
   describe('formatStrategyName', () => {
       it('formats basic login name', () => {
           mountComponent();
-          expect(wrapper.vm.formatStrategyName({ type: 'basic', name: 'Login' })).toBe('Credentials');
+          expect(wrapper.vm.formatStrategyName({ type: 'basic', name: 'Login' })).toBe('账号密码');
           expect(wrapper.vm.formatStrategyName({ type: 'basic', name: 'admin' })).toBe('admin');
       });
 

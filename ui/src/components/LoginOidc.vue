@@ -5,10 +5,10 @@
         <v-icon size="32" color="primary">mdi-shield-account-outline</v-icon>
       </v-avatar>
       <div class="text-subtitle-1 font-weight-bold text-high-emphasis">
-        Single Sign-On
+        {{ t('login.ssoTitle') }}
       </div>
       <div class="text-body-2 text-medium-emphasis">
-        Authenticate using your {{ displayName }} identity provider
+        {{ t('login.ssoSubtitle', { name: displayName }) }}
       </div>
     </div>
 
@@ -23,7 +23,7 @@
       prepend-icon="mdi-openid"
       @click="redirect"
     >
-      Sign in with {{ displayName }}
+      {{ t('login.ssoSignIn', { name: displayName }) }}
     </v-btn>
   </div>
 </template>
@@ -31,8 +31,13 @@
 <script lang="ts">
 import { getOidcRedirection } from "@/services/auth";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   props: {
     name: {
       type: String,
@@ -64,14 +69,14 @@ export default defineComponent({
           window.location.href = redirection.url;
         } else {
           throw new Error(
-            redirection?.error || "Invalid redirection response from server",
+            redirection?.error || this.t("login.invalidRedirect"),
           );
         }
       } catch (e: any) {
         this.loading = false;
         (this as any).$eventBus?.emit(
           "notify",
-          `Unable to connect to OIDC provider (${e.message})`,
+          this.t("login.errorOidc", { message: e.message }),
           "error",
         );
       }

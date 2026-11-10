@@ -3,20 +3,20 @@
     <v-card-title class="d-flex justify-space-between align-center pa-2 pb-0">
       <span class="text-subtitle-2 font-weight-bold">
         <v-icon size="small" color="primary" class="mr-1">mdi-eye</v-icon>
-        Live Watch
+        {{ t('liveWatch.title') }}
       </span>
       <v-btn icon="mdi-close" size="x-small" variant="text" @click="closeHud"></v-btn>
     </v-card-title>
     
     <v-card-text class="pa-3">
       <div class="d-flex justify-space-between text-caption mb-1">
-        <span>Progress</span>
+        <span>{{ t('liveWatch.progress') }}</span>
         <span>{{ totalProcessed }} / {{ totalCount }}</span>
       </div>
       <v-progress-linear :model-value="progressPercent" color="primary" height="8" rounded></v-progress-linear>
       
       <div v-if="currentContainer" class="text-caption mt-2 text-truncate">
-        Inspecting: <strong>{{ currentContainer.name }}</strong> ({{ currentWatcher }})
+        {{ t('liveWatch.inspecting') }} <strong>{{ currentContainer.name }}</strong> ({{ currentWatcher }})
       </div>
     </v-card-text>
   </v-card>
@@ -24,7 +24,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { eventService } from '../services/event';
+
+const { t } = useI18n();
 
 const isVisible = ref(false);
 const watchers = ref<Record<string, { processed: number; total: number; active: boolean }>>({});

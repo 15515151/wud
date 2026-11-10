@@ -10,6 +10,10 @@ export default defineConfig({
   reporter: 'html',
   use: {
     baseURL: process.env.BASE_URL || 'http://127.0.0.1:3000',
+    // The UI defaults to Simplified Chinese; pin the browser locale so the
+    // suite always exercises the same language, whatever the host locale is.
+    locale: 'zh-CN',
+    timezoneId: 'UTC',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     actionTimeout: 15000,

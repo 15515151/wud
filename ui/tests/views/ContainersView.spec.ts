@@ -311,7 +311,7 @@ describe('ContainersView', () => {
     expect(filtered[1].containerGroup).toBe('project-z');
     // Containers with missing label group under '(empty)' and come last
     expect(filtered[2].id).toBe('3');
-    expect(filtered[2].containerGroup).toBe('(empty)');
+    expect(filtered[2].containerGroup).toBe('<空>');
   });
 
   it('handles registry filter change', async () => {
@@ -380,7 +380,7 @@ describe('ContainersView', () => {
 
     // Container should still be in the list
     expect(wrapper.vm.containers).toHaveLength(2);
-    expect(wrapper.vm.$eventBus.emit).toHaveBeenCalledWith("notify", "Error when trying to delete the container (Delete failed)", "error");
+    expect(wrapper.vm.$eventBus.emit).toHaveBeenCalledWith("notify", "删除容器失败（Delete failed）", "error");
     expect(wrapper.vm.containerToDelete).toBeNull();
   });
 
@@ -663,7 +663,7 @@ describe('ContainersView', () => {
     it('includes actions header', () => {
       const actionHeader = wrapper.vm.headers.find((h) => h.key === 'actions');
       expect(actionHeader).toBeDefined();
-      expect(actionHeader.title).toBe('Actions');
+      expect(actionHeader.title).toBe('操作');
     });
   });
 
@@ -881,7 +881,7 @@ describe('ContainersView', () => {
       expect(html).toContain('Official App');
       expect(html).toContain('Unofficial App');
       expect(html).toContain('mdi-check-decagram');
-      expect(html).toContain('Official Docker Image');
+      expect(html).toContain('Docker 官方镜像');
       testWrapper.unmount();
     });
 
@@ -902,8 +902,8 @@ describe('ContainersView', () => {
 
       const html = testWrapper.html();
       expect(html).toContain('https://example.com/release-notes/2.0.0');
-      expect(html).toContain('View release notes for 2.0.0');
-      expect(html).toContain('Release notes (2.0.0)');
+      expect(html).toContain('查看 2.0.0 的发布说明');
+      expect(html).toContain('发布说明（2.0.0）');
       testWrapper.unmount();
     });
 
@@ -924,11 +924,11 @@ describe('ContainersView', () => {
       await testWrapper.vm.$nextTick();
 
       const html = testWrapper.html();
-      expect(html).toContain('Documentation');
+      expect(html).toContain('文档');
       expect(html).toContain('https://example.com/docs');
-      expect(html).toContain('Changelog');
+      expect(html).toContain('更新日志');
       expect(html).toContain('https://example.com/changelog');
-      expect(html).toContain('Source code');
+      expect(html).toContain('源代码');
       expect(html).toContain('https://example.com/source');
       testWrapper.unmount();
     });

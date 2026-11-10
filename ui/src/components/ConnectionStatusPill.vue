@@ -8,14 +8,16 @@
         'is-offline': state === 'offline'
       }"
     ></div>
-    <span v-if="state === 'offline'" class="status-text text-caption ml-2">Reconnect</span>
+    <span v-if="state === 'offline'" class="status-text text-caption ml-2">{{ t('status.reconnect') }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { eventService } from '../services/event';
 
+const { t } = useI18n();
 const state = computed(() => eventService.connectionState.value);
 
 function handleClick() {

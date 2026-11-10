@@ -51,6 +51,13 @@ Explore the documentation for each component below:
   />
 
   <NavigationCard
+    icon="mdi-translate"
+    title="UI Language"
+    href="#-ui-language"
+    description="Switch the web UI between Simplified Chinese (default) and English; the choice is stored in your user profile."
+  />
+
+  <NavigationCard
     icon="mdi-database-search"
     title="Registries"
     href="/docs/configuration/registries"
@@ -99,6 +106,41 @@ Explore the documentation for each component below:
     description="Monitor local Docker daemons, remote engines over TLS, and customize container labels."
   />
 </NavigationGrid>
+
+---
+
+## 🌐 UI Language
+
+The WUD web UI ships with two languages:
+
+| Locale | Code | Default |
+| :--- | :--- | :--- |
+| Simplified Chinese | `zh-CN` | ✅ |
+| English | `en` | |
+
+### Resolution Order
+
+The language used at startup is resolved in this order:
+
+1. the language saved in the user profile (`preferences.locale`),
+2. the language previously chosen on this browser (stored locally),
+3. the browser language (`navigator.languages`) — any `zh*` tag maps to `zh-CN`, any `en*` tag maps to `en`,
+4. **Simplified Chinese** (`zh-CN`) as the final default.
+
+### Switching Language
+
+You can change the language at any time from:
+
+- **My Profile → Appearance → Interface language**, or
+- the **user menu** at the bottom of the sidebar → **Language**.
+
+The switch applies immediately (no reload required) and is persisted to the user profile, so it follows you across browsers. Date and number formatting follows the selected language as well. Vuetify's built-in component labels (table pagination, empty states, etc.) are translated too.
+
+:::note
+
+API error messages returned by the WUD backend are displayed verbatim and are not translated.
+
+:::
 
 ---
 

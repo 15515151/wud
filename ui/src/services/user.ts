@@ -6,7 +6,7 @@ export interface UserItem {
   username: string;
   role: 'admin' | 'rw' | 'ro';
   provider: 'local' | 'oidc';
-  preferences?: { theme?: 'light' | 'dark' };
+  preferences?: { theme?: 'light' | 'dark'; locale?: 'en' | 'zh-CN' };
   createdAt?: string;
   updatedAt?: string;
 }

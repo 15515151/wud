@@ -8,13 +8,13 @@ test.describe('Login Flow', () => {
     await expect(page).toHaveURL(/.*login/);
 
     // Use getByLabel for better reliability with Vuetify inputs
-    await page.getByLabel('Username').fill('john');
-    await page.getByLabel('Password', { exact: true }).fill('doe');
-    await page.getByRole('button', { name: 'Login' }).click();
+    await page.getByLabel('用户名').fill('john');
+    await page.getByLabel('密码', { exact: true }).fill('doe');
+    await page.getByRole('button', { name: '登录' }).click();
 
     // Verify redirect to home
     await expect(page).toHaveURL('/');
-    await expect(page.getByRole('link', { name: 'Home' })).toBeVisible();
+    await expect(page.getByRole('link', { name: '首页' })).toBeVisible();
   });
 
   test('should redirect to initially targeted page after login', async ({ page }) => {
@@ -25,9 +25,9 @@ test.describe('Login Flow', () => {
     await expect(page).toHaveURL(/.*login\?next=(%2F|\/)containers/);
 
     // Log in
-    await page.getByLabel('Username').fill('john');
-    await page.getByLabel('Password', { exact: true }).fill('doe');
-    await page.getByRole('button', { name: 'Login' }).click();
+    await page.getByLabel('用户名').fill('john');
+    await page.getByLabel('密码', { exact: true }).fill('doe');
+    await page.getByRole('button', { name: '登录' }).click();
 
     // Should be redirected to initially targeted page
     await expect(page).toHaveURL(/\/containers/);
@@ -36,9 +36,9 @@ test.describe('Login Flow', () => {
   test('should fail login with invalid credentials and stay on login page', async ({ page }) => {
     await page.goto('/');
 
-    await page.getByLabel('Username').fill('wrong');
-    await page.getByLabel('Password', { exact: true }).fill('pass');
-    await page.getByRole('button', { name: 'Login' }).click();
+    await page.getByLabel('用户名').fill('wrong');
+    await page.getByLabel('密码', { exact: true }).fill('pass');
+    await page.getByRole('button', { name: '登录' }).click();
 
     // Verify still on login page
     await expect(page).toHaveURL(/.*login/);
@@ -62,12 +62,12 @@ test.describe('Login Flow', () => {
     // Verify tabs are present
     const tabs = page.getByRole('tab');
     await expect(tabs).toHaveCount(2);
-    await expect(page.getByRole('tab', { name: 'Credentials' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: '账号密码' })).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Authentik' })).toBeVisible();
 
     // Switch to OIDC tab
     await page.getByRole('tab', { name: 'Authentik' }).click();
-    await expect(page.getByRole('button', { name: /Sign in with Authentik/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /使用 Authentik 登录/ })).toBeVisible();
   });
 
   test('should auto-redirect to OIDC when ONLY OIDC strategy is available', async ({ page }) => {

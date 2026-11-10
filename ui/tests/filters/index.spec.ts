@@ -1,4 +1,5 @@
 import { short, dateTime, date, registerGlobalProperties } from '@/filters/index';
+import { setLocale } from '@/i18n';
 
 describe('Filters', () => {
   describe('short', () => {
@@ -17,16 +18,35 @@ describe('Filters', () => {
   });
 
   describe('dateTime', () => {
-    it('should format date string to datetime', () => {
-      const result = dateTime('2023-01-15T10:30:45Z');
-      expect(result).toMatch(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2}/);
+    it('should format date string according to the current (zh-CN) UI locale', () => {
+      setLocale('zh-CN');
+      expect(dateTime('2023-01-15T10:30:45Z')).toMatch(/\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}/);
+    });
+
+    it('should follow the UI locale when it is switched to en', () => {
+      setLocale('en');
+      expect(dateTime('2023-01-15T10:30:45Z')).toMatch(/\d{2}\/\d{2}\/\d{4},\s\d{2}:\d{2}:\d{2}/);
+    });
+
+    it('should accept an explicit locale', () => {
+      expect(dateTime('2023-01-15T10:30:45Z', 'en-US')).toMatch(/\d{2}\/\d{2}\/\d{4},\s\d{2}:\d{2}:\d{2}/);
     });
   });
 
   describe('date', () => {
-    it('should format date string to date only', () => {
-      const result = date('2023-01-15T10:30:45Z');
-      expect(result).toMatch(/\d{2}\/\d{2}\/\d{2}/);
+    it('should format date string according to the current (zh-CN) UI locale', () => {
+      setLocale('zh-CN');
+      // 2-digit year on zh-CN (e.g. 23/01/15)
+      expect(date('2023-01-15T10:30:45Z')).toMatch(/\d{2}\/\d{2}\/\d{2}/);
+    });
+
+    it('should follow the UI locale when it is switched to en', () => {
+      setLocale('en');
+      expect(date('2023-01-15T10:30:45Z')).toMatch(/\d{2}\/\d{2}\/\d{2}/);
+    });
+
+    it('should accept an explicit locale', () => {
+      expect(date('2023-01-15T10:30:45Z', 'en-US')).toMatch(/\d{2}\/\d{2}\/\d{2}/);
     });
   });
 
@@ -37,13 +57,13 @@ describe('Filters', () => {
           globalProperties: {}
         }
       };
-      
+
       registerGlobalProperties(mockApp);
-      
-      expect(mockApp.config.globalProperties.$filters).toBeDefined();
-      expect(mockApp.config.globalProperties.$filters.short).toBe(short);
-      expect(mockApp.config.globalProperties.$filters.dateTime).toBe(dateTime);
-      expect(mockApp.config.globalProperties.$filters.date).toBe(date);
+
+      expect((mockApp.config.globalProperties as any).$filters).toBeDefined();
+      expect((mockApp.config.globalProperties as any).$filters.short).toBe(short);
+      expect((mockApp.config.globalProperties as any).$filters.dateTime).toBe(dateTime);
+      expect((mockApp.config.globalProperties as any).$filters.date).toBe(date);
     });
   });
 });

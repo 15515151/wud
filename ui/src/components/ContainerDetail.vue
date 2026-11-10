@@ -4,7 +4,7 @@
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-identifier</v-icon>
       </template>
-      <v-list-item-title>Id</v-list-item-title>
+      <v-list-item-title>{{ t('detail.id') }}</v-list-item-title>
       <v-list-item-subtitle>
         {{ container.id }}
         <v-tooltip bottom>
@@ -14,12 +14,12 @@
               size="small"
               icon
               v-bind="props"
-              @click="copyToClipboard('container id', container.id)"
+              @click="copyToClipboard(t('detail.containerId'), container.id)"
             >
               <v-icon size="small">mdi-clipboard</v-icon>
             </v-btn>
           </template>
-          <span class="text-caption">Copy to clipboard</span>
+          <span class="text-caption">{{ t('common.copyToClipboard') }}</span>
         </v-tooltip>
       </v-list-item-subtitle>
     </v-list-item>
@@ -27,28 +27,28 @@
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-pencil</v-icon>
       </template>
-      <v-list-item-title>Name</v-list-item-title>
+      <v-list-item-title>{{ t('detail.name') }}</v-list-item-title>
       <v-list-item-subtitle>{{ container.name }}</v-list-item-subtitle>
     </v-list-item>
     <v-list-item v-if="container.stack">
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-layers-outline</v-icon>
       </template>
-      <v-list-item-title>Stack</v-list-item-title>
+      <v-list-item-title>{{ t('detail.stack') }}</v-list-item-title>
       <v-list-item-subtitle>{{ container.stack }}</v-list-item-subtitle>
     </v-list-item>
     <v-list-item>
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-restart</v-icon>
       </template>
-      <v-list-item-title>Status</v-list-item-title>
+      <v-list-item-title>{{ t('detail.status') }}</v-list-item-title>
       <v-list-item-subtitle>{{ container.status }}</v-list-item-subtitle>
     </v-list-item>
     <v-list-item>
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-update</v-icon>
       </template>
-      <v-list-item-title>Watcher</v-list-item-title>
+      <v-list-item-title>{{ t('detail.watcher') }}</v-list-item-title>
       <v-list-item-subtitle>
         <router-link to="/configuration/watchers">{{
           container.watcher
@@ -60,7 +60,7 @@
         <v-icon color="secondary">mdi-tag</v-icon>
       </template>
       <v-list-item-title>
-        Include tags
+        {{ t('detail.includeTags') }}
         <v-tooltip bottom>
           <template v-slot:activator="{ props }">
             <v-btn
@@ -73,7 +73,7 @@
               <v-icon>mdi-regex</v-icon>
             </v-btn>
           </template>
-          <span>Test on regex101.com</span>
+          <span>{{ t('detail.testRegex') }}</span>
         </v-tooltip>
       </v-list-item-title>
       <v-list-item-subtitle>{{ container.includeTags }}</v-list-item-subtitle>
@@ -83,7 +83,7 @@
         <v-icon color="secondary">mdi-tag-off</v-icon>
       </template>
       <v-list-item-title>
-        Exclude tags
+        {{ t('detail.excludeTags') }}
         <v-tooltip bottom>
           <template v-slot:activator="{ props }">
             <v-btn
@@ -96,7 +96,7 @@
               <v-icon>mdi-regex</v-icon>
             </v-btn>
           </template>
-          <span>Test on regex101.com</span>
+          <span>{{ t('detail.testRegex') }}</span>
         </v-tooltip>
       </v-list-item-title>
       <v-list-item-subtitle>{{ container.excludeTags }}</v-list-item-subtitle>
@@ -105,7 +105,7 @@
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-tag-arrow-right</v-icon>
       </template>
-      <v-list-item-title>Transform tags</v-list-item-title>
+      <v-list-item-title>{{ t('detail.transformTags') }}</v-list-item-title>
       <v-list-item-subtitle>{{
         container.transformTags
       }}</v-list-item-subtitle>
@@ -114,14 +114,14 @@
       <template v-slot:prepend>
         <v-icon color="primary">mdi-check-decagram</v-icon>
       </template>
-      <v-list-item-title>Official</v-list-item-title>
-      <v-list-item-subtitle>Official Docker Image</v-list-item-subtitle>
+      <v-list-item-title>{{ t('detail.official') }}</v-list-item-title>
+      <v-list-item-subtitle>{{ t('detail.officialImage') }}</v-list-item-subtitle>
     </v-list-item>
     <v-list-item v-if="container.documentationUrl">
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-book-open-page-variant</v-icon>
       </template>
-      <v-list-item-title>Documentation</v-list-item-title>
+      <v-list-item-title>{{ t('detail.documentation') }}</v-list-item-title>
       <v-list-item-subtitle>
         <a :href="container.documentationUrl" target="_blank">{{
           container.documentationUrl
@@ -132,7 +132,7 @@
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-history</v-icon>
       </template>
-      <v-list-item-title>{{ container.updateAvailable ? 'Release notes' : 'Changelog' }}</v-list-item-title>
+      <v-list-item-title>{{ container.updateAvailable ? t('detail.releaseNotes') : t('detail.changelog') }}</v-list-item-title>
       <v-list-item-subtitle>
         <a :href="container.updateAvailable ? (container.result?.changelogUrl || container.changelogUrl) : container.changelogUrl" target="_blank">{{
           container.updateAvailable ? (container.result?.changelogUrl || container.changelogUrl) : container.changelogUrl
@@ -143,7 +143,7 @@
       <template v-slot:prepend>
         <v-icon color="secondary">mdi-code-tags</v-icon>
       </template>
-      <v-list-item-title>Source Code</v-list-item-title>
+      <v-list-item-title>{{ t('detail.sourceCode') }}</v-list-item-title>
       <v-list-item-subtitle>
         <a :href="container.upstreamUrl" target="_blank">{{
           container.upstreamUrl
@@ -154,9 +154,14 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 import { copyToClipboard } from "@/services/clipboard";
 
 export default defineComponent({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   props: {
     container: {
       type: Object,
@@ -171,11 +176,14 @@ export default defineComponent({
     async copyToClipboard(kind: string, value: string) {
       const copied = await copyToClipboard(value);
       if (copied) {
-        (this as any).$eventBus.emit("notify", `${kind} copied to clipboard`);
+        (this as any).$eventBus.emit(
+          "notify",
+          this.t("common.copiedToClipboard", { what: kind })
+        );
       } else {
         (this as any).$eventBus.emit(
           "notify",
-          `Unable to copy ${kind} to clipboard`,
+          this.t("common.copyFailed", { what: kind }),
           "warning"
         );
       }

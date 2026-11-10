@@ -5,7 +5,7 @@
       <v-toolbar color="surface" density="compact" class="px-3 py-1">
         <v-icon :icon="logIcon" class="mr-2 text-primary" size="24"></v-icon>
         <div class="d-flex align-center mr-3">
-          <span class="text-subtitle-1 font-weight-bold mr-2">Application Logs</span>
+          <span class="text-subtitle-1 font-weight-bold mr-2">{{ t('logs.title') }}</span>
           <v-chip
             v-if="log.level"
             size="x-small"
@@ -13,7 +13,7 @@
             variant="tonal"
             class="font-weight-bold text-uppercase"
           >
-            Level: {{ log.level }}
+            {{ t('logs.level') }}: {{ log.level }}
           </v-chip>
         </div>
 
@@ -23,7 +23,7 @@
         <v-text-field
           v-model="search"
           prepend-inner-icon="mdi-magnify"
-          placeholder="Filter logs..."
+          :placeholder="t('logs.filterPlaceholder')"
           density="compact"
           variant="outlined"
           hide-details
@@ -41,7 +41,7 @@
           size="small"
           class="mr-1"
           @click="autoScroll = !autoScroll"
-          :title="autoScroll ? 'Auto-scroll enabled' : 'Auto-scroll disabled'"
+          :title="autoScroll ? t('logs.autoScrollOn') : t('logs.autoScrollOff')"
         ></v-btn>
 
         <!-- Clear logs -->
@@ -50,7 +50,7 @@
           variant="text"
           size="small"
           @click="clearLogs"
-          title="Clear display"
+          :title="t('logs.clear')"
         ></v-btn>
       </v-toolbar>
     </v-card>
@@ -61,11 +61,11 @@
       <div class="d-flex align-center justify-space-between px-3 py-1 bg-surface border-b text-caption text-grey">
         <div class="d-flex align-center">
           <v-icon size="12" color="success" class="mr-2">mdi-circle</v-icon>
-          <span>Live Stream (SSE)</span>
-          <span class="ml-2 opacity-70">({{ filteredLogs.length }} lines)</span>
+          <span>{{ t('logs.liveStream') }}</span>
+          <span class="ml-2 opacity-70">({{ t('logs.lines', { count: filteredLogs.length }) }})</span>
         </div>
         <div class="font-monospace text-caption">
-          Buffer: {{ logLines.length }}
+          {{ t('logs.buffer') }} {{ logLines.length }}
         </div>
       </div>
 
@@ -73,8 +73,8 @@
       <v-card-text class="flex-grow-1 overflow-y-auto pa-3 font-monospace" ref="logContainer">
         <div v-if="filteredLogs.length === 0" class="text-center text-grey py-10">
           <v-icon size="36" class="mb-2 opacity-50">mdi-text-box-outline</v-icon>
-          <div class="text-body-2" v-if="search">No logs match the filter</div>
-          <div class="text-body-2" v-else>Waiting for incoming logs...</div>
+          <div class="text-body-2" v-if="search">{{ t('logs.noMatch') }}</div>
+          <div class="text-body-2" v-else>{{ t('logs.waiting') }}</div>
         </div>
 
         <div
@@ -121,6 +121,7 @@ import {
   LogMessage,
 } from "@/services/log";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 import type { RouteLocationNormalized, NavigationGuardNext } from "vue-router";
 
 interface EventSourceLike {
@@ -136,6 +137,10 @@ interface ComponentWithLog {
 
 export default defineComponent({
   name: "LogsView",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   data() {
     return {
       log: {} as Partial<LogConfig>,
@@ -246,7 +251,9 @@ export default defineComponent({
         const component = vm as ComponentWithLog;
         component?.$eventBus?.emit(
           "notify",
-          `Error when trying to load the log configuration (${message})`,
+          (component as any)?.t
+            ? (component as any).t("logs.errorLoad", { message })
+            : `Error when trying to load the log configuration (${message})`,
           "error"
         );
       });

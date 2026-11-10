@@ -12,8 +12,13 @@
 import ConfigurationItem from "@/components/ConfigurationItem.vue";
 import { getStore } from "@/services/store";
 import { defineComponent } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   components: {
     ConfigurationItem,
   },
@@ -25,7 +30,7 @@ export default defineComponent({
   computed: {
     configurationItem() {
       return {
-        name: "state",
+        name: this.t("configuration.sections.store"),
         icon: "mdi-content-save",
         configuration: this.state.configuration,
       };
@@ -40,7 +45,7 @@ export default defineComponent({
       next((vm: any) => {
         vm.$eventBus.emit(
           "notify",
-          `Error when trying to load the state configuration (${e.message})`,
+          vm.t("configuration.errors.state", { message: e.message }),
           "error",
         );
       });

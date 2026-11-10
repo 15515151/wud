@@ -1,5 +1,6 @@
 import { config } from '@vue/test-utils';
 import { createVuetify } from 'vuetify';
+import { i18n, setLocale } from '@/i18n';
 
 // Create a Vuetify instance for testing
 const vuetify = createVuetify({
@@ -7,6 +8,10 @@ const vuetify = createVuetify({
     defaultTheme: 'light'
   }
 });
+
+// Run the whole suite in Simplified Chinese (the default UI locale) so
+// assertions match what users see out of the box.
+setLocale('zh-CN');
 
 // Mock global properties
 const mockEventBus = {
@@ -166,7 +171,7 @@ config.global.stubs = {
 };
 
 // Global plugins
-config.global.plugins = [vuetify];
+config.global.plugins = [i18n, vuetify];
 
 // Mock display composable and Vue Router
 config.global.provide = {
